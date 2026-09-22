@@ -39,5 +39,16 @@ def new_registration():
 
     return render_template("registration_form.html")
 
+@app.route("/registrations/history")
+def registration_history():
+    registrations = Registration.query.order_by(
+        Registration.created_at.desc()
+    ).all()
+
+    return render_template(
+        "registration_history.html",
+        registrations=registrations,
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
