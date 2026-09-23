@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Player - Warrigal Park FC</title>
+</head>
+<body>
+
+    <h1>Add Registered Player</h1>
+
+    <h2>{{ team.name }}</h2>
+
+    <p>
+        Season: {{ team.season }} |
+        Age group: {{ team.age_group }}
+    </p>
+
+    {% if error %}
+        <p role="alert">{{ error }}</p>
+    {% endif %}
+
+    {% if registrations %}
+        <form method="POST">
+
+            <label for="registration_id">
+                Registered player:
+            </label>
+
+            <select
+                id="registration_id"
+                name="registration_id"
+                required
+            >
+                <option value="">Select player</option>
+
+                {% for registration in registrations %}
+                    <option value="{{ registration.id }}">
+                        {{ registration.member.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <button type="submit">
+                Add Player to Team
+            </button>
+
+        </form>
+    {% else %}
+        <p>
+            No unassigned registered players are available
+            for this team's season and age group.
+        </p>
+    {% endif %}
+
+</body>
+</html>

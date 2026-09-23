@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration History - Warrigal Park FC</title>
+</head>
+<body>
+
+    <h1>Registration History</h1>
+
+    <form method="GET" action="{{ url_for('registration_history') }}">
+
+        <label for="member_id">Select Member:</label>
+
+        <select name="member_id" id="member_id" required>
+
+            <option value="">-- Select Member --</option>
+
+            {% if not selected_member_id %}
+                {% for member in members %}
+                    <option value="{{ member.id }}">
+                        {{ member.name }}
+                    </option>
+                {% endfor %}
+            {% else %}
+                {% for member in members %}
+                    {% if member.id == selected_member_id %}
+                        <option value="{{ member.id }}" selected>
+                            {{ member.name }}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+        </select>
+
+        <button type="submit">View History</button>
+
+    </form>
+
+    {% if selected_member_id %}
+
+        <h2>Registration Records</h2>
+
+        {% if registrations %}
+
+            <table border="1" cellpadding="8">
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Season</th>
+                        <th>Age Group</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for registration in registrations %}
+                        <tr>
+                            <td>{{ registration.member.name }}</td>
+                            <td>{{ registration.season }}</td>
+                            <td>{{ registration.age_group }}</td>
+                            <td>{{ registration.status.value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+
+            <p>No registration records found for this member.</p>
+
+        {% endif %}
+
+    {% else %}
+
+        <p>Please select a member to view their registration history.</p>
+
+    {% endif %}
+
+</body>
+</html>
