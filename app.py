@@ -2,21 +2,28 @@ import os
 
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
+
 from models import db, Member, Registration
 
+
 app = Flask(__name__)
+
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL",
     "sqlite:///warrigal_park.db",
 )
+
 db.init_app(app)
+
 
 with app.app_context():
     db.create_all()
 
+
 @app.route("/")
 def home():
     return "Warrigal Park FC app is running!"
+
 
 @app.route("/registrations/new", methods=["GET", "POST"])
 def new_registration():
@@ -29,19 +36,32 @@ def new_registration():
         try:
             if not all((name, dob_str, season, age_group)):
                 raise ValueError
-            dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
+
+            dob = datetime.strptime(
+                dob_str,
+                "%Y-%m-%d",
+            ).date()
+
         except (TypeError, ValueError):
             return render_template(
                 "registration_form.html",
-                error="Please provide a valid name, date of birth, season, and age group.",
+                error=(
+                    "Please provide a valid name, date of birth, "
+                    "season, and age group."
+                ),
             ), 400
 
-        member = Member(name=name, date_of_birth=dob)
+        member = Member(
+            name=name,
+            date_of_birth=dob,
+        )
+
         registration = Registration(
             member=member,
             season=season,
             age_group=age_group,
         )
+
         db.session.add(registration)
         db.session.commit()
 
@@ -49,16 +69,30 @@ def new_registration():
 
     return render_template("registration_form.html")
 
+
 @app.route("/registrations/history")
 def registration_history():
-    registrations = Registration.query.order_by(
-        Registration.created_at.desc()
-    ).all()
+    members = Member.query.order_by(Member.name.asc()).all()
+
+    selected_member_id = request.args.get("member_id", type=int)
+
+    registrations = []
+
+    if selected_member_id:
+        registrations = (
+            Registration.query
+            .filter_by(member_id=selected_member_id)
+            .order_by(Registration.created_at.desc())
+            .all()
+        )
 
     return render_template(
         "registration_history.html",
+        members=members,
         registrations=registrations,
+        selected_member_id=selected_member_id,
     )
+
 
 if __name__ == "__main__":
     app.run()
