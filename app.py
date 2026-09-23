@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 
-from models import db, Member, Registration
+from models import db, Member, Registration, Team
 
 
 app = Flask(__name__)
@@ -93,6 +93,31 @@ def registration_history():
         selected_member_id=selected_member_id,
     )
 
+@app.route("/teams/new", methods=["GET", "POST"])
+def new_team():
+    if request.method == "POST":
+        name = request.form.get("team_name", "").strip()
+        season = request.form.get("season", "").strip()
+        age_group = request.form.get("age_group", "").strip()
+
+        if not all((name, season, age_group)):
+            return render_template(
+                "team_form.html",
+                error="Team name, season, and age group are required.",
+            ), 400
+
+        team = Team(
+            name=name,
+            season=season,
+            age_group=age_group,
+        )
+
+        db.session.add(team)
+        db.session.commit()
+
+        return redirect(url_for("home"))
+
+    return render_template("team_form.html")
 
 if __name__ == "__main__":
     app.run()

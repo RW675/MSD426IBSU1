@@ -33,3 +33,15 @@ class Registration(db.Model):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+
+
+class Team(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    season = db.Column(db.String(20), nullable=False)
+    age_group = db.Column(db.String(20), nullable=False)
+    created_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )

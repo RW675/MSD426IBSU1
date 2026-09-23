@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 
 from app import app, db
-from models import Member, Registration
+from models import Member, Registration, Team
 
 
 @pytest.fixture
@@ -159,3 +159,78 @@ def test_registration_history_does_not_show_another_members_records(client):
     assert b"U13" in response.data
     assert b"Player Two" not in response.data
     assert b"2025" not in response.data
+
+
+def test_create_team_success(client):
+    response = client.post(
+        "/teams/new",
+        data={
+            "team_name": "Warrigal Park U13 Blue",
+            "season": "2026",
+            "age_group": "U13",
+        },
+    )
+
+    assert response.status_code == 302
+
+    with app.app_context():
+        team = Team.query.filter_by(
+            name="Warrigal Park U13 Blue"
+        ).first()
+
+        assert team is not None
+        assert team.season == "2026"
+        assert team.age_group == "U13"
+
+
+def test_create_team_rejects_missing_team_name(client):
+    response = client.post(
+        "/teams/new",
+        data={
+            "team_name": "",
+            "season": "2026",
+            "age_group": "U13",
+        },
+    )
+
+    assert response.status_code == 400
+    assert (
+        b"Team name, season, and age group are required."
+        in response.data
+    )
+
+    with app.app_context():
+        assert Team.query.count() == 0
+
+
+def test_create_team_rejects_missing_season(client):
+    response = client.post(
+        "/teams/new",
+        data={
+            "team_name": "Warrigal Park U13 Blue",
+            "season": "",
+            "age_group": "U13",
+        },
+    )
+
+    assert response.status_code == 400
+
+    with app.app_context():
+        assert Team.query.count() == 0
+
+
+def test_create_team_rejects_missing_age_group(client):
+    response = client.post(
+        "/teams/new",
+        data={
+            "team_name": "Warrigal Park U13 Blue",
+            "season": "2026",
+            "age_group": "",
+        },
+    )
+
+    assert response.status_code == 400
+
+    with app.app_context():
+        assert Team.query.count() == 0
+
