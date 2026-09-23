@@ -234,3 +234,215 @@ def test_create_team_rejects_missing_age_group(client):
     with app.app_context():
         assert Team.query.count() == 0
 
+
+def test_add_registered_player_to_team_success(client):
+    with app.app_context():
+        member = Member(
+            name="Team Player",
+            date_of_birth=datetime.strptime(
+                "2013-05-10",
+                "%Y-%m-%d",
+            ).date(),
+        )
+
+        db.session.add(member)
+        db.session.flush()
+
+        registration = Registration(
+            member_id=member.id,
+            season="2026",
+            age_group="U13",
+        )
+
+        team = Team(
+            name="Warrigal Park U13 Blue",
+            season="2026",
+            age_group="U13",
+        )
+
+        db.session.add_all([registration, team])
+        db.session.commit()
+
+        registration_id = registration.id
+        team_id = team.id
+
+    response = client.post(
+        f"/teams/{team_id}/players/add",
+        data={
+            "registration_id": registration_id,
+        },
+    )
+
+    assert response.status_code == 302
+
+    with app.app_context():
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
+        assert registration is not None
+        assert registration.team_id == team_id
+
+
+def test_add_player_rejects_wrong_season(client):
+    with app.app_context():
+        member = Member(
+            name="Wrong Season Player",
+            date_of_birth=datetime.strptime(
+                "2013-05-10",
+                "%Y-%m-%d",
+            ).date(),
+        )
+
+        db.session.add(member)
+        db.session.flush()
+
+        registration = Registration(
+            member_id=member.id,
+            season="2025",
+            age_group="U13",
+        )
+
+        team = Team(
+            name="Warrigal Park U13 Blue",
+            season="2026",
+            age_group="U13",
+        )
+
+        db.session.add_all([registration, team])
+        db.session.commit()
+
+        registration_id = registration.id
+        team_id = team.id
+
+    response = client.post(
+        f"/teams/{team_id}/players/add",
+        data={
+            "registration_id": registration_id,
+        },
+    )
+
+    assert response.status_code == 400
+    assert b"season does not match" in response.data
+
+    with app.app_context():
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
+        assert registration.team_id is None
+
+
+def test_add_player_rejects_wrong_age_group(client):
+    with app.app_context():
+        member = Member(
+            name="Wrong Age Player",
+            date_of_birth=datetime.strptime(
+                "2013-05-10",
+                "%Y-%m-%d",
+            ).date(),
+        )
+
+        db.session.add(member)
+        db.session.flush()
+
+        registration = Registration(
+            member_id=member.id,
+            season="2026",
+            age_group="U14",
+        )
+
+        team = Team(
+            name="Warrigal Park U13 Blue",
+            season="2026",
+            age_group="U13",
+        )
+
+        db.session.add_all([registration, team])
+        db.session.commit()
+
+        registration_id = registration.id
+        team_id = team.id
+
+    response = client.post(
+        f"/teams/{team_id}/players/add",
+        data={
+            "registration_id": registration_id,
+        },
+    )
+
+    assert response.status_code == 400
+    assert b"age group does not match" in response.data
+
+    with app.app_context():
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
+        assert registration.team_id is None
+
+
+def test_add_player_rejects_already_assigned_player(client):
+    with app.app_context():
+        member = Member(
+            name="Assigned Player",
+            date_of_birth=datetime.strptime(
+                "2013-05-10",
+                "%Y-%m-%d",
+            ).date(),
+        )
+
+        db.session.add(member)
+        db.session.flush()
+
+        first_team = Team(
+            name="Warrigal Park U13 Blue",
+            season="2026",
+            age_group="U13",
+        )
+
+        second_team = Team(
+            name="Warrigal Park U13 Red",
+            season="2026",
+            age_group="U13",
+        )
+
+        registration = Registration(
+            member_id=member.id,
+            season="2026",
+            age_group="U13",
+            team=first_team,
+        )
+
+        db.session.add_all([
+            first_team,
+            second_team,
+            registration,
+        ])
+        db.session.commit()
+
+        registration_id = registration.id
+        second_team_id = second_team.id
+
+    response = client.post(
+        f"/teams/{second_team_id}/players/add",
+        data={
+            "registration_id": registration_id,
+        },
+    )
+
+    assert response.status_code == 400
+    assert b"already assigned to a team" in response.data
+
+    with app.app_context():
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
+        assert registration.team_id is not None
+        assert registration.team_id != second_team_id
+

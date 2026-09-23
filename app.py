@@ -93,6 +93,7 @@ def registration_history():
         selected_member_id=selected_member_id,
     )
 
+
 @app.route("/teams/new", methods=["GET", "POST"])
 def new_team():
     if request.method == "POST":
@@ -119,5 +120,83 @@ def new_team():
 
     return render_template("team_form.html")
 
+
+@app.route("/teams/<int:team_id>/players/add", methods=["GET", "POST"])
+def add_player_to_team(team_id):
+    team = Team.query.get_or_404(team_id)
+
+    registrations = (
+        Registration.query
+        .filter_by(
+            season=team.season,
+            age_group=team.age_group,
+            team_id=None,
+        )
+        .join(Member)
+        .order_by(Member.name.asc())
+        .all()
+    )
+
+    if request.method == "POST":
+        registration_id = request.form.get(
+            "registration_id",
+            type=int,
+        )
+
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
+        if registration is None:
+            return render_template(
+                "add_player_to_team.html",
+                team=team,
+                registrations=registrations,
+                error="Please select a valid registered player.",
+            ), 400
+
+        if registration.team_id is not None:
+            return render_template(
+                "add_player_to_team.html",
+                team=team,
+                registrations=registrations,
+                error="This player is already assigned to a team.",
+            ), 400
+
+        if registration.season != team.season:
+            return render_template(
+                "add_player_to_team.html",
+                team=team,
+                registrations=registrations,
+                error="The player's registration season does not match the team.",
+            ), 400
+
+        if registration.age_group != team.age_group:
+            return render_template(
+                "add_player_to_team.html",
+                team=team,
+                registrations=registrations,
+                error="The player's age group does not match the team.",
+            ), 400
+
+        registration.team_id = team.id
+        db.session.commit()
+
+        return redirect(
+            url_for(
+                "add_player_to_team",
+                team_id=team.id,
+            )
+        )
+
+    return render_template(
+        "add_player_to_team.html",
+        team=team,
+        registrations=registrations,
+    )
+
+
 if __name__ == "__main__":
     app.run()
+

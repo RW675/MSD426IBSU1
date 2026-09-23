@@ -4,10 +4,12 @@ import enum
 
 db = SQLAlchemy()
 
+
 class RegistrationStatus(enum.Enum):
     STARTED = "started"
     COMPLETE = "complete"
     WITHDRAWN = "withdrawn"
+
 
 class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -15,12 +17,20 @@ class Member(db.Model):
     date_of_birth = db.Column(db.Date, nullable=False)
     contact = db.Column(db.String(100))
 
-    registrations = db.relationship("Registration", backref="member", lazy=True)
+    registrations = db.relationship(
+        "Registration",
+        backref="member",
+        lazy=True,
+    )
 
 
 class Registration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    member_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable=False)
+    member_id = db.Column(
+        db.Integer,
+        db.ForeignKey("member.id"),
+        nullable=False,
+    )
     season = db.Column(db.String(20), nullable=False)
     age_group = db.Column(db.String(20), nullable=False)
     status = db.Column(
@@ -34,6 +44,12 @@ class Registration(db.Model):
         nullable=False,
     )
 
+    team_id = db.Column(
+        db.Integer,
+        db.ForeignKey("team.id"),
+        nullable=True,
+    )
+
 
 class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,4 +60,10 @@ class Team(db.Model):
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
+    )
+
+    registrations = db.relationship(
+        "Registration",
+        backref="team",
+        lazy=True,
     )
