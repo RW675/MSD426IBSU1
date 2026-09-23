@@ -5,7 +5,6 @@ from models import Member, Registration
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
 
     with app.app_context():
         db.create_all()
@@ -32,3 +31,22 @@ def test_create_registration_success(client):
         assert registration is not None
         assert registration.season == "2026"
         assert registration.age_group == "U13"
+
+
+def test_create_registration_rejects_missing_date(client):
+    response = client.post("/registrations/new", data={
+        "member_name": "Mia Kelleher",
+        "season": "2026",
+        "age_group": "U13",
+    })
+
+    assert response.status_code == 400
+    assert b"Please provide a valid" in response.data
+
+    with app.app_context():
+        assert Member.query.count() == 0
+
+
+def test_client_uses_isolated_database(client):
+    with app.app_context():
+        assert str(db.engine.url) == "sqlite:///:memory:"

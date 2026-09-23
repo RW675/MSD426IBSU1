@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
 import enum
 
 db = SQLAlchemy()
@@ -28,4 +28,8 @@ class Registration(db.Model):
         default=RegistrationStatus.STARTED,
         nullable=False,
     )
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )

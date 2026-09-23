@@ -1,9 +1,14 @@
+import os
+
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 from models import db, Member, Registration
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///warrigal_park.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL",
+    "sqlite:///warrigal_park.db",
+)
 db.init_app(app)
 
 with app.app_context():
@@ -16,19 +21,24 @@ def home():
 @app.route("/registrations/new", methods=["GET", "POST"])
 def new_registration():
     if request.method == "POST":
-        name = request.form.get("member_name")
+        name = request.form.get("member_name", "").strip()
         dob_str = request.form.get("date_of_birth")
-        season = request.form.get("season")
-        age_group = request.form.get("age_group")
+        season = request.form.get("season", "").strip()
+        age_group = request.form.get("age_group", "").strip()
 
-        dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
+        try:
+            if not all((name, dob_str, season, age_group)):
+                raise ValueError
+            dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
+        except (TypeError, ValueError):
+            return render_template(
+                "registration_form.html",
+                error="Please provide a valid name, date of birth, season, and age group.",
+            ), 400
 
         member = Member(name=name, date_of_birth=dob)
-        db.session.add(member)
-        db.session.commit()
-
         registration = Registration(
-            member_id=member.id,
+            member=member,
             season=season,
             age_group=age_group,
         )
@@ -51,4 +61,4 @@ def registration_history():
     )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
