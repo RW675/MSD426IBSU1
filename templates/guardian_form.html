@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Guardian - Warrigal Park FC</title>
+</head>
+<body>
+    <h1>Create Guardian</h1>
+
+    {% if error %}
+        <p role="alert">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <label for="guardian_name">Guardian name:</label>
+        <input type="text" id="guardian_name" name="guardian_name" required>
+        <br><br>
+
+        <label for="mobile">Mobile:</label>
+        <input type="text" id="mobile" name="mobile">
+        <br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email">
+        <br><br>
+
+        <button type="submit">Save Guardian</button>
+    </form>
+</body>
+</html>
