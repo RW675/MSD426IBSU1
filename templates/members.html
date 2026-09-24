@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members - Warrigal Park Football Club</title>
+</head>
+<body>
+
+    <h1>Warrigal Park Football Club</h1>
+    <h2>Search and View Members</h2>
+
+    <form method="GET" action="/members">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search by member name"
+            value="{{ search }}"
+        >
+        <button type="submit">Search</button>
+    </form>
+
+    <br>
+
+    {% if members %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Member ID</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for member in members %}
+                <tr>
+                    <td>{{ member["name"] }}</td>
+                    <td>{{ member["date_of_birth"] }}</td>
+                    <td>{{ member["id"] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No members found.</p>
+    {% endif %}
+
+    <br>
+
+    <a href="/">Back to Dashboard</a>
+
+</body>
+</html>
