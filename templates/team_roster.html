@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team["name"] }} - Team Roster</title>
+</head>
+<body>
+
+    <h1>Warrigal Park Football Club</h1>
+
+    <h2>{{ team["name"] }}</h2>
+
+    <p>Season: {{ team["season"] }}</p>
+    <p>Age Group: {{ team["age_group"] }}</p>
+
+    <h3>Team Roster</h3>
+
+    {% if players %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Member ID</th>
+                    <th>Player Name</th>
+                    <th>Date of Birth</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for player in players %}
+                <tr>
+                    <td>{{ player["id"] }}</td>
+                    <td>{{ player["name"] }}</td>
+                    <td>{{ player["date_of_birth"] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No players are currently assigned to this team.</p>
+    {% endif %}
+
+    <br>
+
+    <a href="/">Back to Dashboard</a>
+
+</body>
+</html>
