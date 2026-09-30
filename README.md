@@ -24,7 +24,7 @@ This project uses Git for version control and stores environment-specific values
 ### Branching strategy
 - `main` contains the production-ready baseline.
 - Feature branches are used for each enhancement to keep work isolated and reviewable.
-- The current repository branch is `feature/benjamin-registration-history`, which demonstrates a branch-based workflow for implementing the registration history feature.
+- The `feature/benjamin-registration-history` branch was used to implement the registration history feature and was reviewed and merged into `main` through a pull request.
 
 ### Deployment configuration
 - `app.py` loads runtime configuration from the `config.py` module.
