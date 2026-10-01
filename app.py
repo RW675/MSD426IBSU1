@@ -115,6 +115,8 @@ def create_app():
             name = request.form.get("guardian_name", "").strip()
             mobile = request.form.get("mobile", "").strip()
             email = request.form.get("email", "").strip()
+            relationship = request.form.get("relationship", "").strip()
+            address = request.form.get("address", "").strip()
 
             if not name:
                 return render_template(
@@ -122,7 +124,14 @@ def create_app():
                     error="Guardian name is required.",
                 ), 400
 
-            guardian = Guardian(name=name, mobile=mobile or None, email=email or None)
+            guardian = Guardian(
+                name=name,
+                mobile=mobile or None,
+                email=email or None,
+                relationship=relationship or None,
+                address=address or None,
+            )
+
             db.session.add(guardian)
             db.session.commit()
 
@@ -159,6 +168,7 @@ def create_app():
     @app.route("/teams/<int:team_id>/players/add", methods=["GET", "POST"])
     def add_player_to_team(team_id):
         team = db.session.get(Team, team_id)
+
         if team is None:
             return "Team not found", 404
 
@@ -238,12 +248,16 @@ def create_app():
 
 def self_is_junior(dob):
     today = date.today()
-    return (today.year - dob.year) - ((today.month, today.day) < (dob.month, dob.day)) < 18
+    return (
+        today.year - dob.year
+    ) - ((today.month, today.day) < (dob.month, dob.day)) < 18
 
 
 app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "5000")))
-
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", "5000")),
+    )
