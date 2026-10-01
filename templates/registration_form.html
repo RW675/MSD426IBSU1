@@ -14,19 +14,39 @@
 
         <label>Member name:
             <input type="text" name="member_name" required>
-        </label><br><br>
+        </label>
+        <br><br>
 
         <label>Date of birth:
             <input type="date" name="date_of_birth" required>
-        </label><br><br>
+        </label>
+        <br><br>
 
         <label>Season:
             <input type="text" name="season" placeholder="2026" required>
-        </label><br><br>
+        </label>
+        <br><br>
 
         <label>Age group:
             <input type="text" name="age_group" placeholder="U13" required>
-        </label><br><br>
+        </label>
+        <br><br>
+
+        <label for="guardian_id">Guardian:</label>
+        <select id="guardian_id" name="guardian_id">
+            <option value="">Select a guardian</option>
+
+            {% for guardian in guardians %}
+                <option value="{{ guardian.id }}">
+                    {{ guardian.name }}
+                    {% if guardian.mobile %}
+                        - {{ guardian.mobile }}
+                    {% endif %}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
 
         <button type="submit">Register</button>
 

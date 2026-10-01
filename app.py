@@ -26,11 +26,14 @@ def create_app():
 
     @app.route("/registrations/new", methods=["GET", "POST"])
     def new_registration():
+        guardians = Guardian.query.order_by(Guardian.name.asc()).all()
+
         if request.method == "POST":
             name = request.form.get("member_name", "").strip()
             dob_str = request.form.get("date_of_birth")
             season = request.form.get("season", "").strip()
             age_group = request.form.get("age_group", "").strip()
+            guardian_id = request.form.get("guardian_id", type=int)
 
             try:
                 if not all((name, dob_str, season, age_group)):
@@ -44,9 +47,31 @@ def create_app():
             except (TypeError, ValueError):
                 return render_template(
                     "registration_form.html",
+                    guardians=guardians,
                     error=(
                         "Please provide a valid name, date of birth, "
                         "season, and age group."
+                    ),
+                ), 400
+
+            selected_guardian = None
+
+            if guardian_id is not None:
+                selected_guardian = db.session.get(Guardian, guardian_id)
+
+                if selected_guardian is None:
+                    return render_template(
+                        "registration_form.html",
+                        guardians=guardians,
+                        error="Please select a valid guardian record.",
+                    ), 400
+
+            if self_is_junior(dob) and selected_guardian is None:
+                return render_template(
+                    "registration_form.html",
+                    guardians=guardians,
+                    error=(
+                        "Junior registrations require a linked guardian record."
                     ),
                 ), 400
 
@@ -55,23 +80,13 @@ def create_app():
                 date_of_birth=dob,
             ).first()
 
-            if (
-                existing_member is not None
-                and self_is_junior(dob)
-                and existing_member.guardian_id is None
-            ):
-                return render_template(
-                    "registration_form.html",
-                    error=(
-                        "Junior registrations require a linked guardian record before "
-                        "the registration can be completed."
-                    ),
-                ), 400
-
             member = existing_member or Member(
                 name=name,
                 date_of_birth=dob,
             )
+
+            if selected_guardian is not None:
+                member.guardian_id = selected_guardian.id
 
             registration = Registration(
                 member=member,
@@ -84,7 +99,10 @@ def create_app():
 
             return redirect(url_for("home"))
 
-        return render_template("registration_form.html")
+        return render_template(
+            "registration_form.html",
+            guardians=guardians,
+        )
 
     @app.route("/registrations/history")
     def registration_history():
