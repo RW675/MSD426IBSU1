@@ -11,7 +11,10 @@ def create_app():
     app.config.from_object("config.Config")
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
         "DATABASE_URL",
-        app.config.get("SQLALCHEMY_DATABASE_URI", "sqlite:///warrigal_park.db"),
+        app.config.get(
+            "SQLALCHEMY_DATABASE_URI",
+            "sqlite:///warrigal_park.db",
+        ),
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -26,17 +29,45 @@ def create_app():
 
     @app.route("/registrations/new", methods=["GET", "POST"])
     def new_registration():
-        guardians = Guardian.query.order_by(Guardian.name.asc()).all()
+        guardians = (
+            Guardian.query
+            .filter_by(is_active=True)
+            .order_by(Guardian.name.asc())
+            .all()
+        )
 
         if request.method == "POST":
-            name = request.form.get("member_name", "").strip()
+            name = request.form.get(
+                "member_name",
+                "",
+            ).strip()
+
             dob_str = request.form.get("date_of_birth")
-            season = request.form.get("season", "").strip()
-            age_group = request.form.get("age_group", "").strip()
-            guardian_id = request.form.get("guardian_id", type=int)
+
+            season = request.form.get(
+                "season",
+                "",
+            ).strip()
+
+            age_group = request.form.get(
+                "age_group",
+                "",
+            ).strip()
+
+            guardian_id = request.form.get(
+                "guardian_id",
+                type=int,
+            )
 
             try:
-                if not all((name, dob_str, season, age_group)):
+                if not all(
+                    (
+                        name,
+                        dob_str,
+                        season,
+                        age_group,
+                    )
+                ):
                     raise ValueError
 
                 dob = datetime.strptime(
@@ -57,16 +88,25 @@ def create_app():
             selected_guardian = None
 
             if guardian_id is not None:
-                selected_guardian = db.session.get(Guardian, guardian_id)
+                selected_guardian = db.session.get(
+                    Guardian,
+                    guardian_id,
+                )
 
-                if selected_guardian is None:
+                if (
+                    selected_guardian is None
+                    or not selected_guardian.is_active
+                ):
                     return render_template(
                         "registration_form.html",
                         guardians=guardians,
-                        error="Please select a valid guardian record.",
+                        error="Please select a valid active guardian record.",
                     ), 400
 
-            if self_is_junior(dob) and selected_guardian is None:
+            if (
+                self_is_junior(dob)
+                and selected_guardian is None
+            ):
                 return render_template(
                     "registration_form.html",
                     guardians=guardians,
@@ -106,9 +146,16 @@ def create_app():
 
     @app.route("/registrations/history")
     def registration_history():
-        members = Member.query.order_by(Member.name.asc()).all()
+        members = (
+            Member.query
+            .order_by(Member.name.asc())
+            .all()
+        )
 
-        selected_member_id = request.args.get("member_id", type=int)
+        selected_member_id = request.args.get(
+            "member_id",
+            type=int,
+        )
 
         registrations = []
 
@@ -116,7 +163,9 @@ def create_app():
             registrations = (
                 Registration.query
                 .filter_by(member_id=selected_member_id)
-                .order_by(Registration.created_at.desc())
+                .order_by(
+                    Registration.created_at.desc()
+                )
                 .all()
             )
 
@@ -130,11 +179,30 @@ def create_app():
     @app.route("/guardians/new", methods=["GET", "POST"])
     def new_guardian():
         if request.method == "POST":
-            name = request.form.get("guardian_name", "").strip()
-            mobile = request.form.get("mobile", "").strip()
-            email = request.form.get("email", "").strip()
-            relationship = request.form.get("relationship", "").strip()
-            address = request.form.get("address", "").strip()
+            name = request.form.get(
+                "guardian_name",
+                "",
+            ).strip()
+
+            mobile = request.form.get(
+                "mobile",
+                "",
+            ).strip()
+
+            email = request.form.get(
+                "email",
+                "",
+            ).strip()
+
+            relationship = request.form.get(
+                "relationship",
+                "",
+            ).strip()
+
+            address = request.form.get(
+                "address",
+                "",
+            ).strip()
 
             if not name:
                 return render_template(
@@ -148,6 +216,7 @@ def create_app():
                 email=email or None,
                 relationship=relationship or None,
                 address=address or None,
+                is_active=True,
             )
 
             db.session.add(guardian)
@@ -157,17 +226,133 @@ def create_app():
 
         return render_template("guardian_form.html")
 
+    @app.route("/guardians")
+    def guardian_list():
+        guardians = (
+            Guardian.query
+            .order_by(Guardian.name.asc())
+            .all()
+        )
+
+        return render_template(
+            "guardian_list.html",
+            guardians=guardians,
+        )
+
+    @app.route(
+        "/guardians/<int:guardian_id>/edit",
+        methods=["GET", "POST"],
+    )
+    def edit_guardian(guardian_id):
+        guardian = db.session.get(
+            Guardian,
+            guardian_id,
+        )
+
+        if guardian is None:
+            return "Guardian not found", 404
+
+        if request.method == "POST":
+            name = request.form.get(
+                "guardian_name",
+                "",
+            ).strip()
+
+            mobile = request.form.get(
+                "mobile",
+                "",
+            ).strip()
+
+            email = request.form.get(
+                "email",
+                "",
+            ).strip()
+
+            relationship = request.form.get(
+                "relationship",
+                "",
+            ).strip()
+
+            address = request.form.get(
+                "address",
+                "",
+            ).strip()
+
+            if not name:
+                return render_template(
+                    "guardian_edit.html",
+                    guardian=guardian,
+                    error="Guardian name is required.",
+                ), 400
+
+            guardian.name = name
+            guardian.mobile = mobile or None
+            guardian.email = email or None
+            guardian.relationship = relationship or None
+            guardian.address = address or None
+
+            db.session.commit()
+
+            return redirect(
+                url_for("guardian_list")
+            )
+
+        return render_template(
+            "guardian_edit.html",
+            guardian=guardian,
+        )
+
+    @app.route(
+        "/guardians/<int:guardian_id>/deactivate",
+        methods=["POST"],
+    )
+    def deactivate_guardian(guardian_id):
+        guardian = db.session.get(
+            Guardian,
+            guardian_id,
+        )
+
+        if guardian is None:
+            return "Guardian not found", 404
+
+        guardian.is_active = False
+
+        db.session.commit()
+
+        return redirect(
+            url_for("guardian_list")
+        )
+
     @app.route("/teams/new", methods=["GET", "POST"])
     def new_team():
         if request.method == "POST":
-            name = request.form.get("team_name", "").strip()
-            season = request.form.get("season", "").strip()
-            age_group = request.form.get("age_group", "").strip()
+            name = request.form.get(
+                "team_name",
+                "",
+            ).strip()
 
-            if not all((name, season, age_group)):
+            season = request.form.get(
+                "season",
+                "",
+            ).strip()
+
+            age_group = request.form.get(
+                "age_group",
+                "",
+            ).strip()
+
+            if not all(
+                (
+                    name,
+                    season,
+                    age_group,
+                )
+            ):
                 return render_template(
                     "team_form.html",
-                    error="Team name, season, and age group are required.",
+                    error=(
+                        "Team name, season, and age group are required."
+                    ),
                 ), 400
 
             team = Team(
@@ -183,9 +368,15 @@ def create_app():
 
         return render_template("team_form.html")
 
-    @app.route("/teams/<int:team_id>/players/add", methods=["GET", "POST"])
+    @app.route(
+        "/teams/<int:team_id>/players/add",
+        methods=["GET", "POST"],
+    )
     def add_player_to_team(team_id):
-        team = db.session.get(Team, team_id)
+        team = db.session.get(
+            Team,
+            team_id,
+        )
 
         if team is None:
             return "Team not found", 404
@@ -218,7 +409,9 @@ def create_app():
                     "add_player_to_team.html",
                     team=team,
                     registrations=registrations,
-                    error="Please select a valid registered player.",
+                    error=(
+                        "Please select a valid registered player."
+                    ),
                 ), 400
 
             if registration.team_id is not None:
@@ -226,7 +419,9 @@ def create_app():
                     "add_player_to_team.html",
                     team=team,
                     registrations=registrations,
-                    error="This player is already assigned to a team.",
+                    error=(
+                        "This player is already assigned to a team."
+                    ),
                 ), 400
 
             if registration.season != team.season:
@@ -234,7 +429,10 @@ def create_app():
                     "add_player_to_team.html",
                     team=team,
                     registrations=registrations,
-                    error="The player's registration season does not match the team.",
+                    error=(
+                        "The player's registration season "
+                        "does not match the team."
+                    ),
                 ), 400
 
             if registration.age_group != team.age_group:
@@ -242,10 +440,14 @@ def create_app():
                     "add_player_to_team.html",
                     team=team,
                     registrations=registrations,
-                    error="The player's age group does not match the team.",
+                    error=(
+                        "The player's age group "
+                        "does not match the team."
+                    ),
                 ), 400
 
             registration.team_id = team.id
+
             db.session.commit()
 
             return redirect(
@@ -266,9 +468,13 @@ def create_app():
 
 def self_is_junior(dob):
     today = date.today()
+
     return (
         today.year - dob.year
-    ) - ((today.month, today.day) < (dob.month, dob.day)) < 18
+    ) - (
+        (today.month, today.day)
+        < (dob.month, dob.day)
+    ) < 18
 
 
 app = create_app()
@@ -277,5 +483,10 @@ app = create_app()
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", "5000")),
+        port=int(
+            os.environ.get(
+                "PORT",
+                "5000",
+            )
+        ),
     )

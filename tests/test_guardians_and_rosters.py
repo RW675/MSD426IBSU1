@@ -89,3 +89,81 @@ def test_team_roster_lists_players_with_contact_details():
         assert len(roster) == 1
         assert roster[0]["member_name"] == "Ruby Antonopoulos"
         assert roster[0]["guardian_mobile"] == "0438 771 226"
+
+
+def test_guardian_details_can_be_updated():
+    with app.app_context():
+        guardian = Guardian(
+            name="Update Test Guardian",
+            mobile="0400 123 456",
+            email="update@example.com",
+            relationship="Parent",
+            address="Old Address",
+        )
+
+        db.session.add(guardian)
+        db.session.commit()
+
+        guardian_id = guardian.id
+
+        with app.test_client() as client:
+            response = client.post(
+                f"/guardians/{guardian_id}/edit",
+                data={
+                    "guardian_name": "Updated Test Guardian",
+                    "mobile": "0400 999 888",
+                    "email": "updated@example.com",
+                    "relationship": "Teacher",
+                    "address": "New Address",
+                },
+            )
+
+            assert response.status_code == 302
+
+        updated_guardian = db.session.get(
+            Guardian,
+            guardian_id,
+        )
+
+        assert updated_guardian is not None
+        assert updated_guardian.name == "Updated Test Guardian"
+        assert updated_guardian.mobile == "0400 999 888"
+        assert updated_guardian.email == "updated@example.com"
+        assert updated_guardian.relationship == "Teacher"
+        assert updated_guardian.address == "New Address"
+
+        db.session.delete(updated_guardian)
+        db.session.commit()
+
+
+def test_guardian_can_be_deactivated_without_being_deleted():
+    with app.app_context():
+        guardian = Guardian(
+            name="Deactivate Test Guardian",
+            mobile="0400 555 666",
+            email="deactivate@example.com",
+            is_active=True,
+        )
+
+        db.session.add(guardian)
+        db.session.commit()
+
+        guardian_id = guardian.id
+
+        with app.test_client() as client:
+            response = client.post(
+                f"/guardians/{guardian_id}/deactivate",
+            )
+
+            assert response.status_code == 302
+
+        deactivated_guardian = db.session.get(
+            Guardian,
+            guardian_id,
+        )
+
+        assert deactivated_guardian is not None
+        assert deactivated_guardian.is_active is False
+
+        db.session.delete(deactivated_guardian)
+        db.session.commit()

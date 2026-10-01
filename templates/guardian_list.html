@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guardians - Warrigal Park FC</title>
+</head>
+<body>
+    <h1>Guardian Records</h1>
+
+    <p>
+        <a href="/guardians/new">Create New Guardian</a>
+    </p>
+
+    {% if guardians %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Email</th>
+                    <th>Relationship</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for guardian in guardians %}
+                    <tr>
+                        <td>{{ guardian.name }}</td>
+                        <td>{{ guardian.mobile or "" }}</td>
+                        <td>{{ guardian.email or "" }}</td>
+                        <td>{{ guardian.relationship or "" }}</td>
+                        <td>{{ guardian.address or "" }}</td>
+
+                        <td>
+                            {% if guardian.is_active %}
+                                Active
+                            {% else %}
+                                Inactive
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a href="{{ url_for(
+                                'edit_guardian',
+                                guardian_id=guardian.id
+                            ) }}">
+                                Edit
+                            </a>
+
+                            {% if guardian.is_active %}
+                                <form
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'deactivate_guardian',
+                                        guardian_id=guardian.id
+                                    ) }}"
+                                    style="display:inline;"
+                                >
+                                    <button type="submit">
+                                        Deactivate
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No guardian records found.</p>
+    {% endif %}
+</body>
+</html>
