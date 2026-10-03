@@ -2,6 +2,7 @@ import os
 from datetime import date, datetime
 
 from flask import Flask, redirect, render_template, request, url_for
+from sqlalchemy import or_
 
 from models import Guardian, Member, Registration, Team, db
 
@@ -228,8 +229,26 @@ def create_app():
 
     @app.route("/guardians")
     def guardian_list():
+        search = request.args.get(
+            "q",
+            "",
+        ).strip()
+
+        query = Guardian.query
+
+        if search:
+            search_pattern = f"%{search}%"
+
+            query = query.filter(
+                or_(
+                    Guardian.name.ilike(search_pattern),
+                    Guardian.mobile.ilike(search_pattern),
+                    Guardian.email.ilike(search_pattern),
+                )
+            )
+
         guardians = (
-            Guardian.query
+            query
             .order_by(Guardian.name.asc())
             .all()
         )
@@ -237,6 +256,7 @@ def create_app():
         return render_template(
             "guardian_list.html",
             guardians=guardians,
+            search=search,
         )
 
     @app.route(

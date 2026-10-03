@@ -9,8 +9,46 @@
             <h1>Guardian records</h1>
             <p>Keep the people supporting our players close at hand.</p>
         </div>
-        <a class="button" href="{{ url_for('new_guardian') }}">Add guardian <span aria-hidden="true">＋</span></a>
+
+        <a class="button" href="{{ url_for('new_guardian') }}">
+            Add guardian <span aria-hidden="true">＋</span>
+        </a>
     </header>
+
+    <section class="card">
+        <h2>Find a guardian</h2>
+
+        <form method="GET" action="{{ url_for('guardian_list') }}">
+            <div class="form-group">
+                <label for="q">Search by name, mobile or email</label>
+                <input
+                    type="text"
+                    id="q"
+                    name="q"
+                    value="{{ search or '' }}"
+                    placeholder="Enter guardian name, mobile number or email"
+                >
+            </div>
+
+            <button type="submit" class="button">
+                Search
+            </button>
+
+            {% if search %}
+                <a class="button btn-secondary"
+                   href="{{ url_for('guardian_list') }}">
+                    Clear
+                </a>
+            {% endif %}
+        </form>
+    </section>
+
+    {% if search %}
+        <p>
+            Search results for:
+            <strong>{{ search }}</strong>
+        </p>
+    {% endif %}
 
     {% if guardians %}
         <div class="table-wrap">
@@ -26,6 +64,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {% for guardian in guardians %}
                         <tr>
@@ -34,18 +73,45 @@
                             <td>{{ guardian.email or "—" }}</td>
                             <td>{{ guardian.relationship or "—" }}</td>
                             <td>{{ guardian.address or "—" }}</td>
+
                             <td>
                                 {% if guardian.is_active %}
-                                    <span class="status-badge">Active</span>
+                                    <span class="status-badge">
+                                        Active
+                                    </span>
                                 {% else %}
-                                    <span class="status-badge status-inactive">Inactive</span>
+                                    <span class="status-badge status-inactive">
+                                        Inactive
+                                    </span>
                                 {% endif %}
                             </td>
+
                             <td class="action-cell">
-                                <a class="table-link" href="{{ url_for('edit_guardian', guardian_id=guardian.id) }}">Edit</a>
+                                <a
+                                    class="table-link"
+                                    href="{{ url_for(
+                                        'edit_guardian',
+                                        guardian_id=guardian.id
+                                    ) }}"
+                                >
+                                    Edit
+                                </a>
+
                                 {% if guardian.is_active %}
-                                    <form class="inline-form" method="POST" action="{{ url_for('deactivate_guardian', guardian_id=guardian.id) }}">
-                                        <button class="button-small" type="submit">Deactivate</button>
+                                    <form
+                                        class="inline-form"
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'deactivate_guardian',
+                                            guardian_id=guardian.id
+                                        ) }}"
+                                    >
+                                        <button
+                                            class="button-small"
+                                            type="submit"
+                                        >
+                                            Deactivate
+                                        </button>
                                     </form>
                                 {% endif %}
                             </td>
@@ -54,7 +120,19 @@
                 </tbody>
             </table>
         </div>
+
     {% else %}
-        <p class="empty-state">No guardian records yet. Add a guardian to keep player contacts together.</p>
+
+        {% if search %}
+            <p class="empty-state">
+                No guardian records matched "{{ search }}".
+            </p>
+        {% else %}
+            <p class="empty-state">
+                No guardian records yet. Add a guardian to keep
+                player contacts together.
+            </p>
+        {% endif %}
+
     {% endif %}
 {% endblock %}

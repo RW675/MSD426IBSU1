@@ -78,14 +78,27 @@ def test_team_roster_lists_players_with_contact_details():
             status="complete",
         )
 
-        team = Team(name="U13G NAVY", season="2026", age_group="U13")
-        db.session.add_all([guardian, member, registration, team])
+        team = Team(
+            name="U13G NAVY",
+            season="2026",
+            age_group="U13",
+        )
+
+        db.session.add_all(
+            [
+                guardian,
+                member,
+                registration,
+                team,
+            ]
+        )
         db.session.flush()
 
         registration.team_id = team.id
         db.session.commit()
 
         roster = team.roster_details()
+
         assert len(roster) == 1
         assert roster[0]["member_name"] == "Ruby Antonopoulos"
         assert roster[0]["guardian_mobile"] == "0438 771 226"
@@ -166,4 +179,74 @@ def test_guardian_can_be_deactivated_without_being_deleted():
         assert deactivated_guardian.is_active is False
 
         db.session.delete(deactivated_guardian)
+        db.session.commit()
+
+
+def test_create_guardian_success():
+    with app.app_context():
+        with app.test_client() as client:
+            response = client.post(
+                "/guardians/new",
+                data={
+                    "guardian_name": "Creation Test Guardian",
+                    "mobile": "0400 777 888",
+                    "email": "creation@example.com",
+                    "relationship": "Parent",
+                    "address": "10 Test Street",
+                },
+            )
+
+            assert response.status_code == 302
+
+        guardian = Guardian.query.filter_by(
+            email="creation@example.com",
+        ).first()
+
+        assert guardian is not None
+        assert guardian.name == "Creation Test Guardian"
+        assert guardian.mobile == "0400 777 888"
+        assert guardian.email == "creation@example.com"
+        assert guardian.relationship == "Parent"
+        assert guardian.address == "10 Test Street"
+        assert guardian.is_active is True
+
+        db.session.delete(guardian)
+        db.session.commit()
+
+
+def test_guardian_search_returns_matching_guardian():
+    with app.app_context():
+        matching_guardian = Guardian(
+            name="Search Test Guardian",
+            mobile="0400 333 444",
+            email="searchtest@example.com",
+            relationship="Parent",
+        )
+
+        other_guardian = Guardian(
+            name="Different Guardian",
+            mobile="0400 999 000",
+            email="different@example.com",
+            relationship="Parent",
+        )
+
+        db.session.add_all(
+            [
+                matching_guardian,
+                other_guardian,
+            ]
+        )
+        db.session.commit()
+
+        with app.test_client() as client:
+            response = client.get(
+                "/guardians?q=Search+Test"
+            )
+
+            assert response.status_code == 200
+            assert b"Search Test Guardian" in response.data
+            assert b"Different Guardian" not in response.data
+
+        db.session.delete(matching_guardian)
+        db.session.delete(other_guardian)
         db.session.commit()
