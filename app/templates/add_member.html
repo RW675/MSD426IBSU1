@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Member - Warrigal Park Football Club</title>
+</head>
+<body>
+    <h1>Add a New Member</h1>
+    <form method="POST" action="/add-member">
+        <label for="full_name">Full Name:</label><br>
+        <input type="text" id="full_name" name="full_name" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="phone">Phone Number:</label><br>
+        <input type="tel" id="phone" name="phone" required><br><br>
+
+        <label for="date_of_birth">Date of Birth:</label><br>
+        <input type="date" id="date_of_birth" name="date_of_birth" required onchange="checkAge()"><br><br>
+
+        <div id="guardian_section" style="display:none; border:1px solid #ccc; padding:10px;">
+            <p><strong>Guardian details are required for members under 18.</strong></p>
+
+            <label for="guardian_name">Guardian Full Name:</label><br>
+            <input type="text" id="guardian_name" name="guardian_name"><br><br>
+
+            <label for="guardian_phone">Guardian Phone Number:</label><br>
+            <input type="tel" id="guardian_phone" name="guardian_phone"><br><br>
+
+            <label for="guardian_relationship">Relationship to Member:</label><br>
+            <input type="text" id="guardian_relationship" name="guardian_relationship" placeholder="e.g. Parent, Aunt, Legal Guardian"><br><br>
+        </div>
+
+        <button type="submit">Register Member</button>
+    </form>
+
+    <script>
+        function checkAge() {
+            const dob = new Date(document.getElementById('date_of_birth').value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            const guardianSection = document.getElementById('guardian_section');
+            const guardianName = document.getElementById('guardian_name');
+            const guardianPhone = document.getElementById('guardian_phone');
+            const guardianRelationship = document.getElementById('guardian_relationship');
+
+            if (age < 18 && age >= 0) {
+                guardianSection.style.display = 'block';
+                guardianName.required = true;
+                guardianPhone.required = true;
+                guardianRelationship.required = true;
+            } else {
+                guardianSection.style.display = 'none';
+                guardianName.required = false;
+                guardianPhone.required = false;
+                guardianRelationship.required = false;
+            }
+        }
+    </script>
+</body>
+</html>

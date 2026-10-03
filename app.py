@@ -49,29 +49,51 @@ def create_app():
                         "season, and age group."
                     ),
                 ), 400
-
+                
             existing_member = Member.query.filter_by(
                 name=name,
                 date_of_birth=dob,
             ).first()
 
-            if (
-                existing_member is not None
-                and self_is_junior(dob)
-                and existing_member.guardian_id is None
-            ):
-                return render_template(
-                    "registration_form.html",
-                    error=(
-                        "Junior registrations require a linked guardian record before "
-                        "the registration can be completed."
-                    ),
-                ), 400
+            guardian = None
+
+            if self_is_junior(dob):
+                already_linked = (
+                    existing_member is not None
+                    and existing_member.guardian_id is not None
+                )
+
+                if not already_linked:
+                    guardian_name = request.form.get("guardian_name", "").strip()
+                    guardian_mobile = request.form.get("guardian_mobile", "").strip()
+                    guardian_relationship = request.form.get(
+                        "guardian_relationship", ""
+                    ).strip()
+
+                    if not all((guardian_name, guardian_mobile, guardian_relationship)):
+                        return render_template(
+                            "registration_form.html",
+                            error=(
+                                "Junior registrations require a linked guardian "
+                                "record. Please provide the guardian's name, "
+                                "mobile, and relationship."
+                            ),
+                        ), 400
+
+                    guardian = Guardian(
+                        name=guardian_name,
+                        mobile=guardian_mobile,
+                        relationship=guardian_relationship,
+                    )
 
             member = existing_member or Member(
                 name=name,
                 date_of_birth=dob,
             )
+
+            if guardian is not None:
+                db.session.add(guardian)
+                member.guardian = guardian
 
             registration = Registration(
                 member=member,
