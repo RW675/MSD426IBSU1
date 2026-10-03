@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#123e32">
+    <title>{% block title %}Warrigal Park FC{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="{{ url_for('home') }}" aria-label="Warrigal Park FC home">
+                <span class="brand-mark" aria-hidden="true">WP</span>
+                <span class="brand-copy">
+                    <strong>Warrigal Park</strong>
+                    <span>FOOTBALL CLUB</span>
+                </span>
+            </a>
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="{{ url_for('home') }}">Overview</a>
+                <a href="{{ url_for('new_registration') }}">Registrations</a>
+                <a href="{{ url_for('registration_history') }}">History</a>
+                <a href="{{ url_for('guardian_list') }}">Guardians</a>
+                <a class="nav-cta" href="{{ url_for('new_team') }}">Create team <span aria-hidden="true">↗</span></a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <span>Warrigal Park Football Club</span>
+            <span>One club. One community.</span>
+        </div>
+    </footer>
+</body>
+</html>

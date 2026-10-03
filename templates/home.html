@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Club desk · Warrigal Park FC{% endblock %}
+
+{% block content %}
+    <section class="welcome-panel">
+        <div class="welcome-copy">
+            <p class="eyebrow"><span class="live-dot"></span> CLUB ADMINISTRATION</p>
+            <h1>Good things happen<br>when we <em>play together.</em></h1>
+            <p class="welcome-description">
+                Your home base for player registrations, family contacts and team setup.
+                Pick up where the club needs you.
+            </p>
+            <a class="button button-light" href="{{ url_for('new_registration') }}">
+                Register a player <span aria-hidden="true">→</span>
+            </a>
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+            <div class="pitch pitch-one"></div>
+            <div class="pitch pitch-two"></div>
+            <div class="pitch pitch-three"></div>
+            <span class="art-ball">✳</span>
+            <span class="art-season">EST.<br>WARRIGAL</span>
+        </div>
+        <div class="welcome-stamp" aria-hidden="true">WP<br><span>FC</span></div>
+    </section>
+
+    <section class="section-block">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">YOUR CLUB, IN GOOD HANDS</p>
+                <h2>What would you like to do?</h2>
+            </div>
+            <span class="section-note">THE CLUB DESK <span aria-hidden="true">✳</span></span>
+        </div>
+
+        <div class="action-grid">
+            <a class="action-card card-sage" href="{{ url_for('new_registration') }}">
+                <span class="card-icon" aria-hidden="true">＋</span>
+                <span class="card-number">01 / PLAYERS</span>
+                <strong>New registration</strong>
+                <span class="card-description">Welcome a player to the team and record their season details.</span>
+                <span class="card-link">Get started <span aria-hidden="true">↗</span></span>
+            </a>
+            <a class="action-card card-cream" href="{{ url_for('registration_history') }}">
+                <span class="card-icon" aria-hidden="true">↗</span>
+                <span class="card-number">02 / RECORDS</span>
+                <strong>Registration history</strong>
+                <span class="card-description">Look back at a member’s registrations across seasons.</span>
+                <span class="card-link">View history <span aria-hidden="true">↗</span></span>
+            </a>
+            <a class="action-card card-lilac" href="{{ url_for('guardian_list') }}">
+                <span class="card-icon" aria-hidden="true">♡</span>
+                <span class="card-number">03 / COMMUNITY</span>
+                <strong>Guardian records</strong>
+                <span class="card-description">Keep family contacts and important details up to date.</span>
+                <span class="card-link">Manage guardians <span aria-hidden="true">↗</span></span>
+            </a>
+            <a class="action-card card-yellow" href="{{ url_for('new_team') }}">
+                <span class="card-icon" aria-hidden="true">⌁</span>
+                <span class="card-number">04 / TEAMS</span>
+                <strong>Create a team</strong>
+                <span class="card-description">Set up a squad for its season and age group.</span>
+                <span class="card-link">Build a squad <span aria-hidden="true">↗</span></span>
+            </a>
+        </div>
+    </section>
+
+    <aside class="club-note">
+        <span class="note-mark" aria-hidden="true">✳</span>
+        <p><strong>Made for the people behind the game.</strong> Thanks for keeping Warrigal Park moving.</p>
+        <span class="note-tag">UP THE PARK <span aria-hidden="true">↗</span></span>
+    </aside>
+{% endblock %}

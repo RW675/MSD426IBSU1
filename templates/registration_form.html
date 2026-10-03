@@ -1,55 +1,53 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>New Registration - Warrigal Park FC</title>
-</head>
-<body>
-    <h1>New Member Registration</h1>
+{% extends "base.html" %}
 
-    {% if error %}
-        <p role="alert">{{ error }}</p>
-    {% endif %}
+{% block title %}New registration · Warrigal Park FC{% endblock %}
 
-    <form method="POST">
+{% block content %}
+    <header class="page-heading">
+        <p class="eyebrow">WELCOME TO THE CLUB</p>
+        <h1>Register a player</h1>
+        <p>Start a new season by adding the player’s details below.</p>
+    </header>
 
-        <label>Member name:
-            <input type="text" name="member_name" required>
-        </label>
-        <br><br>
+    <section class="content-panel">
+        {% if error %}
+            <p class="alert" role="alert">{{ error }}</p>
+        {% endif %}
 
-        <label>Date of birth:
-            <input type="date" name="date_of_birth" required>
-        </label>
-        <br><br>
-
-        <label>Season:
-            <input type="text" name="season" placeholder="2026" required>
-        </label>
-        <br><br>
-
-        <label>Age group:
-            <input type="text" name="age_group" placeholder="U13" required>
-        </label>
-        <br><br>
-
-        <label for="guardian_id">Guardian:</label>
-        <select id="guardian_id" name="guardian_id">
-            <option value="">Select a guardian</option>
-
-            {% for guardian in guardians %}
-                <option value="{{ guardian.id }}">
-                    {{ guardian.name }}
-                    {% if guardian.mobile %}
-                        - {{ guardian.mobile }}
-                    {% endif %}
-                </option>
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <button type="submit">Register</button>
-
-    </form>
-</body>
-</html>
+        <form method="POST">
+            <div class="form-grid">
+                <div class="form-field form-field-full">
+                    <label for="member_name">Player name</label>
+                    <input type="text" id="member_name" name="member_name" placeholder="Full name" required>
+                </div>
+                <div class="form-field">
+                    <label for="date_of_birth">Date of birth</label>
+                    <input type="date" id="date_of_birth" name="date_of_birth" required>
+                </div>
+                <div class="form-field">
+                    <label for="season">Season</label>
+                    <input type="text" id="season" name="season" placeholder="2026" required>
+                </div>
+                <div class="form-field">
+                    <label for="age_group">Age group</label>
+                    <input type="text" id="age_group" name="age_group" placeholder="U13" required>
+                </div>
+                <div class="form-field">
+                    <label for="guardian_id">Guardian <span class="optional-label">(if applicable)</span></label>
+                    <select id="guardian_id" name="guardian_id">
+                        <option value="">Select a guardian</option>
+                        {% for guardian in guardians %}
+                            <option value="{{ guardian.id }}">
+                                {{ guardian.name }}{% if guardian.mobile %} — {{ guardian.mobile }}{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit">Register player <span aria-hidden="true">→</span></button>
+                <a class="text-link" href="{{ url_for('home') }}">Cancel</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

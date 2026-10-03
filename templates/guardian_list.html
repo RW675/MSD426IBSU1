@@ -1,75 +1,60 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Guardians - Warrigal Park FC</title>
-</head>
-<body>
-    <h1>Guardian Records</h1>
+{% extends "base.html" %}
 
-    <p>
-        <a href="/guardians/new">Create New Guardian</a>
-    </p>
+{% block title %}Guardians · Warrigal Park FC{% endblock %}
+
+{% block content %}
+    <header class="page-heading page-heading-row">
+        <div>
+            <p class="eyebrow">OUR CLUB COMMUNITY</p>
+            <h1>Guardian records</h1>
+            <p>Keep the people supporting our players close at hand.</p>
+        </div>
+        <a class="button" href="{{ url_for('new_guardian') }}">Add guardian <span aria-hidden="true">＋</span></a>
+    </header>
 
     {% if guardians %}
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Mobile</th>
-                    <th>Email</th>
-                    <th>Relationship</th>
-                    <th>Address</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for guardian in guardians %}
+        <div class="table-wrap">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ guardian.name }}</td>
-                        <td>{{ guardian.mobile or "" }}</td>
-                        <td>{{ guardian.email or "" }}</td>
-                        <td>{{ guardian.relationship or "" }}</td>
-                        <td>{{ guardian.address or "" }}</td>
-
-                        <td>
-                            {% if guardian.is_active %}
-                                Active
-                            {% else %}
-                                Inactive
-                            {% endif %}
-                        </td>
-
-                        <td>
-                            <a href="{{ url_for(
-                                'edit_guardian',
-                                guardian_id=guardian.id
-                            ) }}">
-                                Edit
-                            </a>
-
-                            {% if guardian.is_active %}
-                                <form
-                                    method="POST"
-                                    action="{{ url_for(
-                                        'deactivate_guardian',
-                                        guardian_id=guardian.id
-                                    ) }}"
-                                    style="display:inline;"
-                                >
-                                    <button type="submit">
-                                        Deactivate
-                                    </button>
-                                </form>
-                            {% endif %}
-                        </td>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Email</th>
+                        <th>Relationship</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for guardian in guardians %}
+                        <tr>
+                            <td>{{ guardian.name }}</td>
+                            <td>{{ guardian.mobile or "—" }}</td>
+                            <td>{{ guardian.email or "—" }}</td>
+                            <td>{{ guardian.relationship or "—" }}</td>
+                            <td>{{ guardian.address or "—" }}</td>
+                            <td>
+                                {% if guardian.is_active %}
+                                    <span class="status-badge">Active</span>
+                                {% else %}
+                                    <span class="status-badge status-inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td class="action-cell">
+                                <a class="table-link" href="{{ url_for('edit_guardian', guardian_id=guardian.id) }}">Edit</a>
+                                {% if guardian.is_active %}
+                                    <form class="inline-form" method="POST" action="{{ url_for('deactivate_guardian', guardian_id=guardian.id) }}">
+                                        <button class="button-small" type="submit">Deactivate</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <p>No guardian records found.</p>
+        <p class="empty-state">No guardian records yet. Add a guardian to keep player contacts together.</p>
     {% endif %}
-</body>
-</html>
+{% endblock %}

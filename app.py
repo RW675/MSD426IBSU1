@@ -25,7 +25,7 @@ def create_app():
 
     @app.route("/")
     def home():
-        return "Warrigal Park FC app is running!"
+        return render_template("home.html")
 
     @app.route("/registrations/new", methods=["GET", "POST"])
     def new_registration():
