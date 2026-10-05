@@ -30,12 +30,19 @@ def create_app():
 
     @app.route("/registrations/new", methods=["GET", "POST"])
     def new_registration():
-        guardians = (
-            Guardian.query
-            .filter_by(is_active=True)
-            .order_by(Guardian.name.asc())
-            .all()
-        )
+        def render_form(error=None, status=200):
+            guardians = (
+                Guardian.query
+                .filter_by(is_active=True)
+                .order_by(Guardian.name.asc())
+                .all()
+            )
+
+            return render_template(
+                "registration_form.html",
+                error=error,
+                guardians=guardians,
+            ), status
 
         if request.method == "POST":
             name = request.form.get(
@@ -77,14 +84,18 @@ def create_app():
                 ).date()
 
             except (TypeError, ValueError):
-                return render_template(
-                    "registration_form.html",
-                    guardians=guardians,
+                return render_form(
                     error=(
                         "Please provide a valid name, date of birth, "
                         "season, and age group."
                     ),
-                ), 400
+                    status=400,
+                )
+
+            existing_member = Member.query.filter_by(
+                name=name,
+                date_of_birth=dob,
+            ).first()
 
             selected_guardian = None
 
@@ -94,32 +105,41 @@ def create_app():
                     guardian_id,
                 )
 
+                if selected_guardian is None:
+                    return render_form(
+                        error=(
+                            "The selected guardian does not exist. "
+                            "Please select an existing guardian record."
+                        ),
+                        status=400,
+                    )
+
+                if not selected_guardian.is_active:
+                    return render_form(
+                        error=(
+                            "Please select a valid active guardian record."
+                        ),
+                        status=400,
+                    )
+
+            if self_is_junior(dob):
+                already_linked = (
+                    existing_member is not None
+                    and existing_member.guardian_id is not None
+                )
+
                 if (
                     selected_guardian is None
-                    or not selected_guardian.is_active
+                    and not already_linked
                 ):
-                    return render_template(
-                        "registration_form.html",
-                        guardians=guardians,
-                        error="Please select a valid active guardian record.",
-                    ), 400
-
-            if (
-                self_is_junior(dob)
-                and selected_guardian is None
-            ):
-                return render_template(
-                    "registration_form.html",
-                    guardians=guardians,
-                    error=(
-                        "Junior registrations require a linked guardian record."
-                    ),
-                ), 400
-
-            existing_member = Member.query.filter_by(
-                name=name,
-                date_of_birth=dob,
-            ).first()
+                    return render_form(
+                        error=(
+                            "Junior registrations require a linked guardian "
+                            "record before the registration can be completed. "
+                            "Please select an existing guardian."
+                        ),
+                        status=400,
+                    )
 
             member = existing_member or Member(
                 name=name,
@@ -140,10 +160,7 @@ def create_app():
 
             return redirect(url_for("home"))
 
-        return render_template(
-            "registration_form.html",
-            guardians=guardians,
-        )
+        return render_form()
 
     @app.route("/registrations/history")
     def registration_history():

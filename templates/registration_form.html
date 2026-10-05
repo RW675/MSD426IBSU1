@@ -18,35 +18,87 @@
             <div class="form-grid">
                 <div class="form-field form-field-full">
                     <label for="member_name">Player name</label>
-                    <input type="text" id="member_name" name="member_name" placeholder="Full name" required>
+                    <input
+                        type="text"
+                        id="member_name"
+                        name="member_name"
+                        placeholder="Full name"
+                        required
+                    >
                 </div>
+
                 <div class="form-field">
                     <label for="date_of_birth">Date of birth</label>
-                    <input type="date" id="date_of_birth" name="date_of_birth" required>
+                    <input
+                        type="date"
+                        id="date_of_birth"
+                        name="date_of_birth"
+                        required
+                    >
                 </div>
+
                 <div class="form-field">
                     <label for="season">Season</label>
-                    <input type="text" id="season" name="season" placeholder="2026" required>
+                    <input
+                        type="text"
+                        id="season"
+                        name="season"
+                        placeholder="2026"
+                        required
+                    >
                 </div>
+
                 <div class="form-field">
                     <label for="age_group">Age group</label>
-                    <input type="text" id="age_group" name="age_group" placeholder="U13" required>
+                    <input
+                        type="text"
+                        id="age_group"
+                        name="age_group"
+                        placeholder="U13"
+                        required
+                    >
                 </div>
+
                 <div class="form-field">
-                    <label for="guardian_id">Guardian <span class="optional-label">(if applicable)</span></label>
+                    <label for="guardian_id">
+                        Guardian
+                        <span class="optional-label">
+                            (required for players under 18)
+                        </span>
+                    </label>
+
                     <select id="guardian_id" name="guardian_id">
-                        <option value="">Select a guardian</option>
+                        <option value="">Select an existing guardian</option>
+
                         {% for guardian in guardians %}
                             <option value="{{ guardian.id }}">
-                                {{ guardian.name }}{% if guardian.mobile %} — {{ guardian.mobile }}{% endif %}
+                                {{ guardian.name }}
+                                {% if guardian.mobile %}
+                                    — {{ guardian.mobile }}
+                                {% endif %}
                             </option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
+
+            {% if not guardians %}
+                <p class="alert">
+                    No active guardian records are available.
+                    <a href="{{ url_for('new_guardian') }}">
+                        Add a guardian first
+                    </a>.
+                </p>
+            {% endif %}
+
             <div class="form-actions">
-                <button type="submit">Register player <span aria-hidden="true">→</span></button>
-                <a class="text-link" href="{{ url_for('home') }}">Cancel</a>
+                <button type="submit">
+                    Register player <span aria-hidden="true">→</span>
+                </button>
+
+                <a class="text-link" href="{{ url_for('home') }}">
+                    Cancel
+                </a>
             </div>
         </form>
     </section>
