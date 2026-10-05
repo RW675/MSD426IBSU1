@@ -1,81 +1,66 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Registration History - Warrigal Park FC</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Registration History</h1>
+{% block title %}Registration history · Warrigal Park FC{% endblock %}
 
-    <form method="GET" action="{{ url_for('registration_history') }}">
+{% block content %}
+    <header class="page-heading">
+        <p class="eyebrow">PLAYER RECORDS</p>
+        <h1>Registration history</h1>
+        <p>Follow a member’s journey with the club across seasons.</p>
+    </header>
 
-        <label for="member_id">Select Member:</label>
-
-        <select name="member_id" id="member_id" required>
-
-            <option value="">-- Select Member --</option>
-
-            {% if not selected_member_id %}
-                {% for member in members %}
-                    <option value="{{ member.id }}">
-                        {{ member.name }}
-                    </option>
-                {% endfor %}
-            {% else %}
-                {% for member in members %}
-                    {% if member.id == selected_member_id %}
-                        <option value="{{ member.id }}" selected>
-                            {{ member.name }}
-                        </option>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-
-        </select>
-
-        <button type="submit">View History</button>
-
+    <form class="content-panel filter-panel" method="GET" action="{{ url_for('registration_history') }}">
+        <div class="form-field">
+            <label for="member_id">Select a member</label>
+            <select name="member_id" id="member_id" required>
+                <option value="">Select Member</option>
+                {% if not selected_member_id %}
+                    {% for member in members %}
+                        <option value="{{ member.id }}">{{ member.name }}</option>
+                    {% endfor %}
+                {% else %}
+                    {% for member in members %}
+                        {% if member.id == selected_member_id %}
+                            <option value="{{ member.id }}" selected>{{ member.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        <button type="submit">View history <span aria-hidden="true">→</span></button>
     </form>
 
     {% if selected_member_id %}
-
-        <h2>Registration Records</h2>
-
-        {% if registrations %}
-
-            <table border="1" cellpadding="8">
-                <thead>
-                    <tr>
-                        <th>Member</th>
-                        <th>Season</th>
-                        <th>Age Group</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for registration in registrations %}
-                        <tr>
-                            <td>{{ registration.member.name }}</td>
-                            <td>{{ registration.season }}</td>
-                            <td>{{ registration.age_group }}</td>
-                            <td>{{ registration.status.value }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-        {% else %}
-
-            <p>No registration records found for this member.</p>
-
-        {% endif %}
-
+        <section class="result-section">
+            <h2>Registration records</h2>
+            {% if registrations %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Season</th>
+                                <th>Age group</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registration in registrations %}
+                                <tr>
+                                    <td>{{ registration.member.name }}</td>
+                                    <td>{{ registration.season }}</td>
+                                    <td>{{ registration.age_group }}</td>
+                                    <td><span class="status-badge">{{ registration.status.value }}</span></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="empty-state">No registration records found for this member.</p>
+            {% endif %}
+        </section>
     {% else %}
-
-        <p>Please select a member to view their registration history.</p>
-
+        <p class="empty-state">Choose a member above to see their registration history.</p>
     {% endif %}
-
-</body>
-</html>
+{% endblock %}
