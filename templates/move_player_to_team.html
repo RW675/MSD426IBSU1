@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Move Player - Warrigal Park FC</title>
+</head>
+<body>
+
+    <h1>Move Player to Another Team</h1>
+
+    <h2>{{ registration.member.name }}</h2>
+
+    <p>
+        Currently on: {{ team.name }} |
+        Season: {{ team.season }} |
+        Age group: {{ team.age_group }}
+    </p>
+
+    {% if error %}
+        <p role="alert">{{ error }}</p>
+    {% endif %}
+
+    {% if target_teams %}
+        <form method="POST">
+
+            <label for="target_team_id">
+                Move to team:
+            </label>
+
+            <select
+                id="target_team_id"
+                name="target_team_id"
+                required
+            >
+                <option value="">Select team</option>
+
+                {% for target_team in target_teams %}
+                    <option value="{{ target_team.id }}">
+                        {{ target_team.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <button type="submit">
+                Move Player
+            </button>
+
+        </form>
+    {% else %}
+        <p>
+            No other teams are available for this player's
+            season and age group.
+        </p>
+    {% endif %}
+
+</body>
+</html>

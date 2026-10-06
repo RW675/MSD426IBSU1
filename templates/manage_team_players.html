@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Players - Warrigal Park FC</title>
+</head>
+<body>
+
+    <h1>Manage Team Players</h1>
+
+    <h2>{{ team.name }}</h2>
+
+    <p>
+        Season: {{ team.season }} |
+        Age group: {{ team.age_group }}
+    </p>
+
+    {% if roster %}
+        <table border="1" cellpadding="6">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Date of birth</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registration in roster %}
+                    <tr>
+                        <td>{{ registration.member.name }}</td>
+                        <td>{{ registration.member.date_of_birth }}</td>
+                        <td>
+                            <a href="{{ url_for('move_player_to_team', team_id=team.id, registration_id=registration.id) }}">
+                                Move
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('remove_player_from_team', team_id=team.id, registration_id=registration.id) }}"
+                                style="display:inline;"
+                            >
+                                <button type="submit">
+                                    Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>
+            This team has no players assigned yet.
+        </p>
+    {% endif %}
+
+    <p>
+        <a href="{{ url_for('add_player_to_team', team_id=team.id) }}">
+            Add a player to this team
+        </a>
+    </p>
+
+</body>
+</html>
