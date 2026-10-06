@@ -1,41 +1,53 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Manage Players - Warrigal Park FC</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Manage Team Players</h1>
+{% block title %}Team Roster · Warrigal Park FC{% endblock %}
 
-    <h2>{{ team.name }}</h2>
+{% block content %}
+<section class="section-block">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">TEAM ROSTER</p>
+            <h1>{{ team.name }}</h1>
+        </div>
 
-    <p>
-        Season: {{ team.season }} |
-        Age group: {{ team.age_group }}
-    </p>
+        <span class="section-note">
+            {{ team.season }} · {{ team.age_group }}
+        </span>
+    </div>
 
     {% if roster %}
-        <table border="1" cellpadding="6">
+        <table>
             <thead>
                 <tr>
+                    <th>Member ID</th>
                     <th>Player</th>
                     <th>Date of birth</th>
                     <th>Actions</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for registration in roster %}
                     <tr>
+                        <td>{{ registration.member.id }}</td>
                         <td>{{ registration.member.name }}</td>
                         <td>{{ registration.member.date_of_birth }}</td>
                         <td>
-                            <a href="{{ url_for('move_player_to_team', team_id=team.id, registration_id=registration.id) }}">
+                            <a href="{{ url_for(
+                                'move_player_to_team',
+                                team_id=team.id,
+                                registration_id=registration.id
+                            ) }}">
                                 Move
                             </a>
 
                             <form
                                 method="POST"
-                                action="{{ url_for('remove_player_from_team', team_id=team.id, registration_id=registration.id) }}"
+                                action="{{ url_for(
+                                    'remove_player_from_team',
+                                    team_id=team.id,
+                                    registration_id=registration.id
+                                ) }}"
                                 style="display:inline;"
                             >
                                 <button type="submit">
@@ -48,9 +60,7 @@
             </tbody>
         </table>
     {% else %}
-        <p>
-            This team has no players assigned yet.
-        </p>
+        <p>This team has no players assigned yet.</p>
     {% endif %}
 
     <p>
@@ -59,5 +69,10 @@
         </a>
     </p>
 
-</body>
-</html>
+    <p>
+        <a href="{{ url_for('home') }}">
+            Back to club desk
+        </a>
+    </p>
+</section>
+{% endblock %}

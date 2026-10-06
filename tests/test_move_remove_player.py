@@ -33,8 +33,12 @@ def create_registration(
 ):
     member = Member(
         name=name,
-        date_of_birth=datetime.strptime("2013-05-10", "%Y-%m-%d").date(),
+        date_of_birth=datetime.strptime(
+            "2013-05-10",
+            "%Y-%m-%d",
+        ).date(),
     )
+
     db.session.add(member)
     db.session.flush()
 
@@ -44,8 +48,10 @@ def create_registration(
         age_group=age_group,
         team_id=team.id if team else None,
     )
+
     db.session.add(registration)
     db.session.flush()
+
     return registration
 
 
@@ -53,7 +59,12 @@ def test_move_player_to_another_team_success(client):
     with app.app_context():
         blue = create_team("Warrigal Park U13 Blue")
         red = create_team("Warrigal Park U13 Red")
-        registration = create_registration("Move Player", team=blue)
+
+        registration = create_registration(
+            "Move Player",
+            team=blue,
+        )
+
         db.session.commit()
 
         blue_id = blue.id
@@ -62,21 +73,39 @@ def test_move_player_to_another_team_success(client):
 
     response = client.post(
         f"/teams/{blue_id}/players/{registration_id}/move",
-        data={"target_team_id": red_id},
+        data={
+            "target_team_id": red_id,
+        },
     )
 
     assert response.status_code == 302
 
     with app.app_context():
-        registration = db.session.get(Registration, registration_id)
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
         assert registration.team_id == red_id
 
 
 def test_move_player_rejects_team_with_different_age_group(client):
     with app.app_context():
-        blue = create_team("Warrigal Park U13 Blue", age_group="U13")
-        other = create_team("Warrigal Park U14 Blue", age_group="U14")
-        registration = create_registration("Move Player", team=blue)
+        blue = create_team(
+            "Warrigal Park U13 Blue",
+            age_group="U13",
+        )
+
+        other = create_team(
+            "Warrigal Park U14 Blue",
+            age_group="U14",
+        )
+
+        registration = create_registration(
+            "Move Player",
+            team=blue,
+        )
+
         db.session.commit()
 
         blue_id = blue.id
@@ -85,21 +114,32 @@ def test_move_player_rejects_team_with_different_age_group(client):
 
     response = client.post(
         f"/teams/{blue_id}/players/{registration_id}/move",
-        data={"target_team_id": other_id},
+        data={
+            "target_team_id": other_id,
+        },
     )
 
     assert response.status_code == 400
     assert b"must match the season and age group" in response.data
 
     with app.app_context():
-        registration = db.session.get(Registration, registration_id)
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
         assert registration.team_id == blue_id
 
 
 def test_move_player_rejects_missing_destination_team(client):
     with app.app_context():
         blue = create_team("Warrigal Park U13 Blue")
-        registration = create_registration("Move Player", team=blue)
+
+        registration = create_registration(
+            "Move Player",
+            team=blue,
+        )
+
         db.session.commit()
 
         blue_id = blue.id
@@ -114,7 +154,11 @@ def test_move_player_rejects_missing_destination_team(client):
     assert b"valid destination team" in response.data
 
     with app.app_context():
-        registration = db.session.get(Registration, registration_id)
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
         assert registration.team_id == blue_id
 
 
@@ -122,7 +166,12 @@ def test_move_player_returns_404_when_player_not_on_team(client):
     with app.app_context():
         blue = create_team("Warrigal Park U13 Blue")
         red = create_team("Warrigal Park U13 Red")
-        registration = create_registration("Red Player", team=red)
+
+        registration = create_registration(
+            "Red Player",
+            team=red,
+        )
+
         db.session.commit()
 
         blue_id = blue.id
@@ -130,7 +179,9 @@ def test_move_player_returns_404_when_player_not_on_team(client):
 
     response = client.post(
         f"/teams/{blue_id}/players/{registration_id}/move",
-        data={"target_team_id": blue_id},
+        data={
+            "target_team_id": blue_id,
+        },
     )
 
     assert response.status_code == 404
@@ -140,7 +191,12 @@ def test_move_page_loads_for_player_on_team(client):
     with app.app_context():
         blue = create_team("Warrigal Park U13 Blue")
         create_team("Warrigal Park U13 Red")
-        registration = create_registration("Move Player", team=blue)
+
+        registration = create_registration(
+            "Move Player",
+            team=blue,
+        )
+
         db.session.commit()
 
         blue_id = blue.id
@@ -157,7 +213,12 @@ def test_move_page_loads_for_player_on_team(client):
 def test_remove_player_from_team_success(client):
     with app.app_context():
         blue = create_team("Warrigal Park U13 Blue")
-        registration = create_registration("Remove Player", team=blue)
+
+        registration = create_registration(
+            "Remove Player",
+            team=blue,
+        )
+
         db.session.commit()
 
         blue_id = blue.id
@@ -170,7 +231,11 @@ def test_remove_player_from_team_success(client):
     assert response.status_code == 302
 
     with app.app_context():
-        registration = db.session.get(Registration, registration_id)
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
         assert registration is not None
         assert registration.team_id is None
 
@@ -179,7 +244,12 @@ def test_remove_player_returns_404_when_player_not_on_team(client):
     with app.app_context():
         blue = create_team("Warrigal Park U13 Blue")
         red = create_team("Warrigal Park U13 Red")
-        registration = create_registration("Red Player", team=red)
+
+        registration = create_registration(
+            "Red Player",
+            team=red,
+        )
+
         db.session.commit()
 
         blue_id = blue.id
@@ -193,12 +263,18 @@ def test_remove_player_returns_404_when_player_not_on_team(client):
     assert response.status_code == 404
 
     with app.app_context():
-        registration = db.session.get(Registration, registration_id)
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
         assert registration.team_id == red_id
 
 
 def test_remove_player_returns_404_when_team_not_found(client):
-    response = client.post("/teams/999/players/1/remove")
+    response = client.post(
+        "/teams/999/players/1/remove"
+    )
 
     assert response.status_code == 404
 
@@ -206,14 +282,29 @@ def test_remove_player_returns_404_when_team_not_found(client):
 def test_manage_team_page_lists_only_players_on_that_team(client):
     with app.app_context():
         blue = create_team("Warrigal Park U13 Blue")
-        create_registration("Roster Player", team=blue)
+
+        roster_registration = create_registration(
+            "Roster Player",
+            team=blue,
+        )
+
         create_registration("Unassigned Player")
         db.session.commit()
 
         blue_id = blue.id
+        member_id = roster_registration.member_id
 
-    response = client.get(f"/teams/{blue_id}/manage")
+    response = client.get(
+        f"/teams/{blue_id}/manage"
+    )
 
     assert response.status_code == 200
+    assert b"Warrigal Park U13 Blue" in response.data
+    assert b"2026" in response.data
+    assert b"U13" in response.data
+    assert b"Member ID" in response.data
+    assert str(member_id).encode() in response.data
     assert b"Roster Player" in response.data
     assert b"Unassigned Player" not in response.data
+    assert b"Move" in response.data
+    assert b"Remove" in response.data
