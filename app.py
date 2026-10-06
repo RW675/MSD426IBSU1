@@ -28,6 +28,29 @@ def create_app():
     def home():
         return render_template("home.html")
 
+    @app.route("/members")
+    def members():
+        search = request.args.get("search", "").strip()
+
+        query = Member.query
+
+        if search:
+            query = query.filter(
+                Member.name.ilike(f"%{search}%")
+            )
+
+        member_list = (
+            query
+            .order_by(Member.name.asc())
+            .all()
+        )
+
+        return render_template(
+            "members.html",
+            members=member_list,
+            search=search,
+        )
+
     @app.route("/registrations/new", methods=["GET", "POST"])
     def new_registration():
         def render_form(error=None, status=200):
@@ -493,40 +516,66 @@ def create_app():
                     team_id=team.id,
                 )
             )
+
         return render_template(
             "add_player_to_team.html",
             team=team,
             registrations=registrations,
         )
+
     @app.route(
         "/teams/<int:team_id>/players/<int:registration_id>/remove",
         methods=["POST"],
     )
     def remove_player_from_team(team_id, registration_id):
         team = db.session.get(Team, team_id)
+
         if team is None:
             return "Team not found", 404
 
-        registration = db.session.get(Registration, registration_id)
-        if registration is None or registration.team_id != team.id:
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
+        if (
+            registration is None
+            or registration.team_id != team.id
+        ):
             return "Registration not found on this team", 404
 
         registration.team_id = None
         db.session.commit()
 
-        return redirect(url_for("add_player_to_team", team_id=team.id))
+        return redirect(
+            url_for(
+                "add_player_to_team",
+                team_id=team.id,
+            )
+        )
 
     @app.route(
         "/teams/<int:team_id>/players/<int:registration_id>/move",
         methods=["GET", "POST"],
     )
     def move_player_to_team(team_id, registration_id):
-        current_team = db.session.get(Team, team_id)
+        current_team = db.session.get(
+            Team,
+            team_id,
+        )
+
         if current_team is None:
             return "Team not found", 404
 
-        registration = db.session.get(Registration, registration_id)
-        if registration is None or registration.team_id != current_team.id:
+        registration = db.session.get(
+            Registration,
+            registration_id,
+        )
+
+        if (
+            registration is None
+            or registration.team_id != current_team.id
+        ):
             return "Registration not found on this team", 404
 
         target_teams = (
@@ -541,8 +590,16 @@ def create_app():
         )
 
         if request.method == "POST":
-            target_team_id = request.form.get("target_team_id", type=int)
-            target_team = db.session.get(Team, target_team_id) if target_team_id else None
+            target_team_id = request.form.get(
+                "target_team_id",
+                type=int,
+            )
+
+            target_team = (
+                db.session.get(Team, target_team_id)
+                if target_team_id
+                else None
+            )
 
             if target_team is None:
                 return render_template(
@@ -550,7 +607,9 @@ def create_app():
                     team=current_team,
                     registration=registration,
                     target_teams=target_teams,
-                    error="Please select a valid destination team.",
+                    error=(
+                        "Please select a valid destination team."
+                    ),
                 ), 400
 
             if (
@@ -562,13 +621,21 @@ def create_app():
                     team=current_team,
                     registration=registration,
                     target_teams=target_teams,
-                    error="The destination team must match the season and age group.",
+                    error=(
+                        "The destination team must match "
+                        "the season and age group."
+                    ),
                 ), 400
 
             registration.team_id = target_team.id
             db.session.commit()
 
-            return redirect(url_for("add_player_to_team", team_id=target_team.id))
+            return redirect(
+                url_for(
+                    "add_player_to_team",
+                    team_id=target_team.id,
+                )
+            )
 
         return render_template(
             "move_player_to_team.html",
@@ -576,10 +643,11 @@ def create_app():
             registration=registration,
             target_teams=target_teams,
         )
-    
+
     @app.route("/teams/<int:team_id>/manage")
     def manage_team_players(team_id):
         team = db.session.get(Team, team_id)
+
         if team is None:
             return "Team not found", 404
 

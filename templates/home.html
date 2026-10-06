@@ -42,6 +42,7 @@
                 <span class="card-description">Welcome a player to the team and record their season details.</span>
                 <span class="card-link">Get started <span aria-hidden="true">↗</span></span>
             </a>
+
             <a class="action-card card-cream" href="{{ url_for('registration_history') }}">
                 <span class="card-icon" aria-hidden="true">↗</span>
                 <span class="card-number">02 / RECORDS</span>
@@ -49,6 +50,7 @@
                 <span class="card-description">Look back at a member’s registrations across seasons.</span>
                 <span class="card-link">View history <span aria-hidden="true">↗</span></span>
             </a>
+
             <a class="action-card card-lilac" href="{{ url_for('guardian_list') }}">
                 <span class="card-icon" aria-hidden="true">♡</span>
                 <span class="card-number">03 / COMMUNITY</span>
@@ -56,12 +58,21 @@
                 <span class="card-description">Keep family contacts and important details up to date.</span>
                 <span class="card-link">Manage guardians <span aria-hidden="true">↗</span></span>
             </a>
+
             <a class="action-card card-yellow" href="{{ url_for('new_team') }}">
                 <span class="card-icon" aria-hidden="true">⌁</span>
                 <span class="card-number">04 / TEAMS</span>
                 <strong>Create a team</strong>
                 <span class="card-description">Set up a squad for its season and age group.</span>
                 <span class="card-link">Build a squad <span aria-hidden="true">↗</span></span>
+            </a>
+
+            <a class="action-card card-sage" href="{{ url_for('members') }}">
+                <span class="card-icon" aria-hidden="true">⌕</span>
+                <span class="card-number">05 / MEMBERS</span>
+                <strong>Search members</strong>
+                <span class="card-description">Find existing club members and review their recorded details.</span>
+                <span class="card-link">View members <span aria-hidden="true">↗</span></span>
             </a>
         </div>
     </section>
