@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 
 from app import app, db
-from models import Member, Registration, Team
+from models import Guardian, Member, Registration, Team
 
 
 @pytest.fixture
@@ -19,6 +19,18 @@ def client():
 
 
 def test_create_registration_success(client):
+    with app.app_context():
+        guardian = Guardian(
+            name="Dani Kelleher",
+            mobile="0417 662 908",
+            email="d.kelleher@example.com",
+        )
+
+        db.session.add(guardian)
+        db.session.commit()
+
+        guardian_id = guardian.id
+
     response = client.post(
         "/registrations/new",
         data={
@@ -26,14 +38,19 @@ def test_create_registration_success(client):
             "date_of_birth": "2014-09-03",
             "season": "2026",
             "age_group": "U13",
+            "guardian_id": str(guardian_id),
         },
     )
 
     assert response.status_code == 302
 
     with app.app_context():
-        member = Member.query.filter_by(name="Mia Kelleher").first()
+        member = Member.query.filter_by(
+            name="Mia Kelleher"
+        ).first()
+
         assert member is not None
+        assert member.guardian_id == guardian_id
 
         registration = Registration.query.filter_by(
             member_id=member.id
@@ -445,4 +462,3 @@ def test_add_player_rejects_already_assigned_player(client):
 
         assert registration.team_id is not None
         assert registration.team_id != second_team_id
-

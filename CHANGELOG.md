@@ -1,5 +1,18 @@
 # Changelog
 
+## 06/10/2026
+
+### Added
+- MSD426IBSU1-10: manage team players page at /teams/<team_id>/manage, showing a team's roster
+- MSD426IBSU1-10: move player route and page, to move a player to another team with the same season and age group
+- MSD426IBSU1-10: remove player route, so a player returns to the unassigned list
+- manage_team_players.html and move_player_to_team.html templates
+- tests/test_move_remove_player.py: 9 automated tests for moving, removing and the roster page
+- README: new main pages table and updated testing section
+
+### Fixed
+- add_player_to_team returned nothing on a GET request (500 error) because the final return render_template was indented inside the POST block
+
 ## 28/09/2026
 
 ### Added

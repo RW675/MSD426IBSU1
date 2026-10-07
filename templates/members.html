@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Members · Warrigal Park FC{% endblock %}
+
+{% block content %}
+<section class="section-block">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">MEMBER RECORDS</p>
+            <h1>Search and View Members</h1>
+        </div>
+        <span class="section-note">
+            WARRIGAL PARK FC
+        </span>
+    </div>
+
+    <form method="GET" action="{{ url_for('members') }}">
+        <label for="search">Search by member name</label>
+
+        <input
+            id="search"
+            type="text"
+            name="search"
+            placeholder="Enter a member name"
+            value="{{ search }}"
+        >
+
+        <button type="submit">
+            Search
+        </button>
+
+        {% if search %}
+            <a href="{{ url_for('members') }}">
+                Clear search
+            </a>
+        {% endif %}
+    </form>
+
+    {% if members %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Member ID</th>
+                    <th>Name</th>
+                    <th>Date of birth</th>
+                    <th>Contact</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for member in members %}
+                    <tr>
+                        <td>{{ member.id }}</td>
+                        <td>{{ member.name }}</td>
+                        <td>{{ member.date_of_birth }}</td>
+                        <td>
+                            {% if member.contact %}
+                                {{ member.contact }}
+                            {% elif member.guardian_mobile %}
+                                {{ member.guardian_mobile }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No members found.</p>
+    {% endif %}
+
+    <p>
+        <a href="{{ url_for('home') }}">
+            Back to club desk
+        </a>
+    </p>
+</section>
+{% endblock %}

@@ -1,57 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Player - Warrigal Park FC</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Add Registered Player</h1>
+{% block title %}Add player · Warrigal Park FC{% endblock %}
 
-    <h2>{{ team.name }}</h2>
+{% block content %}
+    <header class="page-heading">
+        <p class="eyebrow">TEAM ROSTER</p>
+        <h1>Add a registered player</h1>
+        <p>Choose an eligible player to join this squad.</p>
+    </header>
 
-    <p>
-        Season: {{ team.season }} |
-        Age group: {{ team.age_group }}
-    </p>
-
-    {% if error %}
-        <p role="alert">{{ error }}</p>
-    {% endif %}
-
-    {% if registrations %}
-        <form method="POST">
-
-            <label for="registration_id">
-                Registered player:
-            </label>
-
-            <select
-                id="registration_id"
-                name="registration_id"
-                required
-            >
-                <option value="">Select player</option>
-
-                {% for registration in registrations %}
-                    <option value="{{ registration.id }}">
-                        {{ registration.member.name }}
-                    </option>
-                {% endfor %}
-            </select>
-
-            <br><br>
-
-            <button type="submit">
-                Add Player to Team
-            </button>
-
-        </form>
-    {% else %}
-        <p>
-            No unassigned registered players are available
-            for this team's season and age group.
+    <section class="content-panel">
+        <p class="team-summary">
+            <strong>{{ team.name }}</strong><br>
+            Season {{ team.season }} <span aria-hidden="true">·</span> Age group {{ team.age_group }}
         </p>
-    {% endif %}
 
-</body>
-</html>
+        {% if error %}
+            <p class="alert" role="alert">{{ error }}</p>
+        {% endif %}
+
+        {% if registrations %}
+            <form method="POST">
+                <div class="form-field">
+                    <label for="registration_id">Registered player</label>
+                    <select id="registration_id" name="registration_id" required>
+                        <option value="">Select a player</option>
+                        {% for registration in registrations %}
+                            <option value="{{ registration.id }}">{{ registration.member.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Add player to team <span aria-hidden="true">→</span></button>
+                    <a class="text-link" href="{{ url_for('home') }}">Cancel</a>
+                </div>
+            </form>
+        {% else %}
+            <p class="empty-state">
+                No unassigned registered players are available for this team's season and age group.
+            </p>
+        {% endif %}
+    </section>
+{% endblock %}

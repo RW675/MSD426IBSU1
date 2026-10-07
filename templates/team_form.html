@@ -1,50 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Team - Warrigal Park FC</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Create Team</h1>
+{% block title %}Create a team · Warrigal Park FC{% endblock %}
 
-    {% if error %}
-        <p role="alert">{{ error }}</p>
-    {% endif %}
+{% block content %}
+    <header class="page-heading">
+        <p class="eyebrow">TEAMS &amp; SQUADS</p>
+        <h1>Create a team</h1>
+        <p>Set up a squad for the season and age group it will represent.</p>
+    </header>
 
-    <form method="POST">
+    <section class="content-panel">
+        {% if error %}
+            <p class="alert" role="alert">{{ error }}</p>
+        {% endif %}
 
-        <label for="team_name">Team name:</label>
-        <input
-            type="text"
-            id="team_name"
-            name="team_name"
-            required
-        >
-        <br><br>
-
-        <label for="season">Season:</label>
-        <input
-            type="text"
-            id="season"
-            name="season"
-            placeholder="2026"
-            required
-        >
-        <br><br>
-
-        <label for="age_group">Age group:</label>
-        <input
-            type="text"
-            id="age_group"
-            name="age_group"
-            placeholder="U13"
-            required
-        >
-        <br><br>
-
-        <button type="submit">Create Team</button>
-
-    </form>
-
-</body>
-</html>
+        <form method="POST">
+            <div class="form-grid">
+                <div class="form-field form-field-full">
+                    <label for="team_name">Team name</label>
+                    <input type="text" id="team_name" name="team_name" placeholder="e.g. U13 Green" required>
+                </div>
+                <div class="form-field">
+                    <label for="season">Season</label>
+                    <input type="text" id="season" name="season" placeholder="2026" pattern="[0-9]{4}" inputmode="numeric" minlength="4" maxlength="4" title="Enter a four-digit season year." required>
+                </div>
+                <div class="form-field">
+                    <label for="age_group">Age group</label>
+                    <input type="text" id="age_group" name="age_group" placeholder="U13" required>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit">Create team <span aria-hidden="true">→</span></button>
+                <a class="text-link" href="{{ url_for('home') }}">Cancel</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

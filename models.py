@@ -16,6 +16,9 @@ class RegistrationStatus(enum.Enum):
 
 class Guardian(db.Model):
     __tablename__ = "guardian"
+    __table_args__ = (
+        db.UniqueConstraint("email", name="uq_guardian_email"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
@@ -23,6 +26,11 @@ class Guardian(db.Model):
     email = db.Column(db.String(120), nullable=True)
     relationship = db.Column(db.String(80), nullable=True)
     address = db.Column(db.String(255), nullable=True)
+    is_active = db.Column(
+        db.Boolean,
+        default=True,
+        nullable=False,
+    )
     created_at = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),
@@ -42,6 +50,10 @@ class Guardian(db.Model):
 
 
 class Member(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint("name", "date_of_birth", name="uq_member_name_dob"),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
@@ -99,6 +111,10 @@ class Registration(db.Model):
 
 
 class Team(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint("name", "season", "age_group", name="uq_team_name_season_age_group"),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     season = db.Column(db.String(20), nullable=False)
