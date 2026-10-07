@@ -78,3 +78,9 @@ Tests are in the `tests` folder:
 
 ## Notes for assessment submission
 The project includes supporting assignment documentation for configuration management and procurement plan, alongside the application code and version-control evidence required for the assessment.
+## Volunteer user documentation
+A step-by-step guide for club volunteers is available at:
+
+`docs/VOLUNTEER_USER_GUIDE.md`
+
+The guide covers member search, guardians, registrations, registration history, teams, player assignment, roster management, reports, printing, CSV exports, validation messages, and basic data-safety practices.
