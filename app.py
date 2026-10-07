@@ -333,12 +333,28 @@ def create_app():
             total_registrations=len(all_registrations),
             season_counts=season_counts,
             age_group_counts=age_group_counts,
-            teams=Team.query.order_by(Team.season.desc(), Team.name.asc()).all(),
+            teams=Team.query.order_by(
+            Team.season.desc(),
+            Team.age_group.asc(),
+            Team.name.asc(),
+            ).all(),
         )
 
     @app.route("/reports/registrations.csv")
     def registrations_csv():
-        registrations = Registration.query.join(Member).outerjoin(Team).order_by(Member.name.asc()).all()
+        registrations = (
+            Registration.query
+            .join(Member)
+            .outerjoin(Team)
+            .order_by(
+                Registration.season.desc(),
+                Registration.age_group.asc(),
+                Team.name.asc(),
+                Member.name.asc(),
+            )
+            .all()
+                )
+
         stream = io.StringIO()
         writer = csv.writer(stream)
         writer.writerow([

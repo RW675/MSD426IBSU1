@@ -30,18 +30,35 @@ def test_duplicate_member_registration_is_blocked():
 
 def test_reports_page_and_csv_export_work():
     with app.app_context():
-        team = Team(name="U13 Gold", season="2026", age_group="U13")
-        member = Member(name="Report Player", date_of_birth=date(2014, 4, 12))
-        registration = Registration(member=member, season="2026", age_group="U13", team=team)
+        team = Team(
+            name="U13 Gold",
+            season="2026",
+            age_group="U13",
+        )
+        member = Member(
+            name="Report Player",
+            date_of_birth=date(2014, 4, 12),
+        )
+        registration = Registration(
+            member=member,
+            season="2026",
+            age_group="U13",
+            team=team,
+        )
+
         db.session.add_all([team, member, registration])
         db.session.commit()
 
         with app.test_client() as client:
             page = client.get("/reports")
-            assert page.status_code == 200
-            assert b"Registration and roster reporting" in page.data
 
-            csv_response = client.get("/reports/registrations.csv")
+            assert page.status_code == 200
+            assert b"Registration and Roster Report" in page.data
+
+            csv_response = client.get(
+                "/reports/registrations.csv"
+            )
+
             assert csv_response.status_code == 200
             assert b"member_name" in csv_response.data
             assert b"Report Player" in csv_response.data
@@ -60,19 +77,28 @@ def test_admin_login_and_session_work():
         with app.test_client() as client:
             invalid = client.post(
                 "/login",
-                data={"username": "wrong", "password": "wrong"},
+                data={
+                    "username": "wrong",
+                    "password": "wrong",
+                },
             )
+
             assert invalid.status_code == 401
 
             valid = client.post(
                 "/login",
-                data={"username": "clubadmin", "password": "securepass"},
+                data={
+                    "username": "clubadmin",
+                    "password": "securepass",
+                },
                 follow_redirects=False,
             )
+
             assert valid.status_code == 302
 
             with client.session_transaction() as session:
                 assert session.get("is_admin") is True
+
     finally:
         app.config["ADMIN_ENABLED"] = original_enabled
         app.config["ADMIN_USERNAME"] = original_username

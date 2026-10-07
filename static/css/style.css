@@ -1032,3 +1032,339 @@ td:first-child {
         transition-duration: .01ms !important;
     }
 }
+
+/* Reports page */
+
+.report-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.report-team-item > div {
+    display: grid;
+    gap: 4px;
+}
+
+.report-team-details {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.report-print-footer {
+    display: none;
+}
+
+/* Print-friendly club report */
+
+@media print {
+    @page {
+        size: A4;
+        margin: 16mm;
+    }
+
+    body {
+        min-width: 0;
+        background: white;
+        color: #000;
+        font-family: Arial, sans-serif;
+    }
+
+    .site-header,
+    .site-footer,
+    .no-print,
+    .flash-stack {
+        display: none !important;
+    }
+
+    .page-shell {
+        width: 100%;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .report-page {
+        width: 100%;
+    }
+
+    .report-heading {
+        display: block;
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+        border-bottom: 2px solid #000;
+    }
+
+    .report-heading .eyebrow {
+        margin-bottom: 6px;
+        color: #000;
+        font-size: 10pt;
+    }
+
+    .report-heading h1 {
+        margin-bottom: 6px;
+        color: #000;
+        font-size: 20pt;
+        letter-spacing: 0;
+    }
+
+    .report-heading p {
+        margin-bottom: 0;
+        color: #333;
+        font-size: 10pt;
+    }
+
+    .report-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 0 0 22px;
+    }
+
+    .report-card {
+        padding: 10px;
+        border: 1px solid #999;
+        border-radius: 0;
+        background: white;
+        box-shadow: none;
+        break-inside: avoid;
+    }
+
+    .report-card h3 {
+        margin-bottom: 6px;
+        color: #000;
+        font-size: 9pt;
+    }
+
+    .report-card strong {
+        color: #000;
+        font-size: 18pt;
+    }
+
+    .report-card small {
+        color: #444;
+        font-size: 7pt;
+    }
+
+    .report-section {
+        margin-top: 20px;
+        break-inside: auto;
+    }
+
+    .report-section > h2 {
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #777;
+        color: #000;
+        font-size: 13pt;
+    }
+
+    .report-list {
+        gap: 0;
+        margin-top: 0;
+    }
+
+    .report-list-item {
+        padding: 7px 5px;
+        border: 0;
+        border-bottom: 1px solid #ddd;
+        border-radius: 0;
+        background: white;
+        color: #000;
+        font-size: 9pt;
+        break-inside: avoid;
+    }
+
+    .report-team-details {
+        color: #444;
+        font-size: 8pt;
+    }
+
+    .report-print-footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 28px;
+        padding-top: 8px;
+        border-top: 1px solid #999;
+        color: #444;
+        font-size: 8pt;
+    }
+}
+
+/* Team roster page */
+
+.roster-print-page {
+    width: 100%;
+}
+
+.roster-heading {
+    margin-bottom: 20px;
+}
+
+.roster-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 20px 0 28px;
+}
+
+.roster-summary-item {
+    display: grid;
+    gap: 6px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--white);
+}
+
+.roster-summary-item span {
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.roster-summary-item strong {
+    color: var(--ink);
+    font-size: 13px;
+}
+
+.roster-section {
+    margin-top: 0;
+}
+
+.roster-table-wrap {
+    margin-top: 14px;
+}
+
+.roster-table th:first-child,
+.roster-table td:first-child {
+    width: 110px;
+}
+
+@media (max-width: 700px) {
+    .roster-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .report-actions {
+        width: 100%;
+    }
+
+    .report-actions .button {
+        flex: 1 1 auto;
+    }
+}
+
+/* Print-friendly team roster */
+
+@media print {
+    .roster-print-page {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .roster-heading {
+        display: block;
+        margin: 0 0 18px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #000;
+    }
+
+    .roster-heading .eyebrow {
+        margin-bottom: 5px;
+        color: #000;
+        font-size: 9pt;
+    }
+
+    .roster-heading h1 {
+        margin-bottom: 5px;
+        color: #000;
+        font-size: 20pt;
+        letter-spacing: 0;
+    }
+
+    .roster-heading p {
+        margin: 0;
+        color: #333;
+        font-size: 10pt;
+    }
+
+    .roster-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin: 0 0 20px;
+    }
+
+    .roster-summary-item {
+        padding: 8px;
+        border: 1px solid #999;
+        border-radius: 0;
+        background: white;
+        break-inside: avoid;
+    }
+
+    .roster-summary-item span {
+        color: #444;
+        font-size: 7pt;
+    }
+
+    .roster-summary-item strong {
+        color: #000;
+        font-size: 10pt;
+    }
+
+    .roster-section {
+        margin-top: 0;
+    }
+
+    .roster-section > h2 {
+        margin-bottom: 8px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #777;
+        color: #000;
+        font-size: 13pt;
+    }
+
+    .roster-table-wrap {
+        overflow: visible;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .roster-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .roster-table thead {
+        display: table-header-group;
+    }
+
+    .roster-table tr {
+        break-inside: avoid;
+    }
+
+    .roster-table th {
+        padding: 7px 8px;
+        border: 1px solid #777;
+        background: #eee;
+        color: #000;
+        font-size: 8pt;
+    }
+
+    .roster-table td {
+        padding: 7px 8px;
+        border: 1px solid #aaa;
+        color: #000;
+        font-size: 9pt;
+    }
+
+    .roster-table th:first-child,
+    .roster-table td:first-child {
+        width: 90px;
+    }
+}
