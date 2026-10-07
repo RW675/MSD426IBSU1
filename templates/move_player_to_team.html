@@ -1,58 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Move Player - Warrigal Park FC</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Move Player to Another Team</h1>
+{% block title %}Move player · Warrigal Park FC{% endblock %}
 
-    <h2>{{ registration.member.name }}</h2>
+{% block content %}
+    <header class="page-heading">
+        <p class="eyebrow">TEAM ROSTER</p>
+        <h1>Move player</h1>
+        <p>Transfer {{ registration.member.name }} to a different team in the same competition group.</p>
+    </header>
 
-    <p>
-        Currently on: {{ team.name }} |
-        Season: {{ team.season }} |
-        Age group: {{ team.age_group }}
-    </p>
-
-    {% if error %}
-        <p role="alert">{{ error }}</p>
-    {% endif %}
-
-    {% if target_teams %}
-        <form method="POST">
-
-            <label for="target_team_id">
-                Move to team:
-            </label>
-
-            <select
-                id="target_team_id"
-                name="target_team_id"
-                required
-            >
-                <option value="">Select team</option>
-
-                {% for target_team in target_teams %}
-                    <option value="{{ target_team.id }}">
-                        {{ target_team.name }}
-                    </option>
-                {% endfor %}
-            </select>
-
-            <br><br>
-
-            <button type="submit">
-                Move Player
-            </button>
-
-        </form>
-    {% else %}
-        <p>
-            No other teams are available for this player's
-            season and age group.
+    <section class="content-panel">
+        <p class="team-summary">
+            <strong>{{ registration.member.name }}</strong><br>
+            Currently on: {{ team.name }}<br>
+            Season {{ team.season }} <span aria-hidden="true">·</span> Age group {{ team.age_group }}
         </p>
-    {% endif %}
 
-</body>
-</html>
+        {% if error %}
+            <p class="alert" role="alert">{{ error }}</p>
+        {% endif %}
+
+        {% if target_teams %}
+            <form method="POST">
+                <div class="form-field">
+                    <label for="target_team_id">Move to team</label>
+                    <select id="target_team_id" name="target_team_id" required>
+                        <option value="">Select team</option>
+                        {% for target_team in target_teams %}
+                            <option value="{{ target_team.id }}">
+                                {{ target_team.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit">Move player <span aria-hidden="true">→</span></button>
+                    <a class="text-link" href="{{ url_for('manage_team_players', team_id=team.id) }}">Back to roster</a>
+                </div>
+            </form>
+        {% else %}
+            <p class="empty-state">
+                No other teams are available for this player's season and age group.
+            </p>
+        {% endif %}
+    </section>
+{% endblock %}

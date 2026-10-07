@@ -13,16 +13,14 @@
         <div class="form-field">
             <label for="member_id">Select a member</label>
             <select name="member_id" id="member_id" required>
-                <option value="">Select Member</option>
-                {% if not selected_member_id %}
-                    {% for member in members %}
-                        <option value="{{ member.id }}">{{ member.name }}</option>
+                {% if selected_member_id %}
+                    {% for member in members if member.id == selected_member_id %}
+                        <option value="{{ member.id }}" selected>{{ member.name }}</option>
                     {% endfor %}
                 {% else %}
+                    <option value="">Select Member</option>
                     {% for member in members %}
-                        {% if member.id == selected_member_id %}
-                            <option value="{{ member.id }}" selected>{{ member.name }}</option>
-                        {% endif %}
+                        <option value="{{ member.id }}">{{ member.name }}</option>
                     {% endfor %}
                 {% endif %}
             </select>

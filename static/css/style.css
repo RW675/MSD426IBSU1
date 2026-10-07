@@ -631,6 +631,46 @@ h3 {
     line-height: 1.6;
 }
 
+.flash-stack {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.flash {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.flash-success {
+    background: #edf9ef;
+    border-color: #cfe9d3;
+    color: #225c39;
+}
+
+.flash-info {
+    background: #eef5ff;
+    border-color: #d3e2fc;
+    color: #204a7d;
+}
+
+.flash-error {
+    background: #fff1f0;
+    border-color: #f1d1ce;
+    color: #9b3f38;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
 .status-badge {
     display: inline-flex;
     align-items: center;
@@ -707,6 +747,23 @@ td:first-child {
     margin-left: 10px;
 }
 
+.inline-form-nav {
+    margin-left: 0;
+}
+
+.nav-signout {
+    min-height: 32px;
+    padding: 0 12px;
+    background: rgb(255 255 255 / 10%);
+    color: white;
+    border: 1px solid rgb(255 255 255 / 18%);
+}
+
+.nav-signout:hover {
+    background: rgb(255 255 255 / 16%);
+    box-shadow: none;
+}
+
 .button-small {
     min-height: 30px;
     padding: 0 10px;
@@ -765,6 +822,70 @@ td:first-child {
 
 .team-summary strong {
     color: var(--ink);
+}
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.report-card {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--white);
+    box-shadow: var(--shadow);
+}
+
+.report-card h3 {
+    margin-bottom: 10px;
+    font-size: 13px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.report-card strong {
+    display: block;
+    font-size: 28px;
+    letter-spacing: -.05em;
+}
+
+.report-card small {
+    color: var(--muted);
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.report-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.report-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fafbf9;
+    font-size: 12px;
+}
+
+.inline-note {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.login-panel {
+    max-width: 460px;
+    margin: 0 auto;
 }
 
 @media (max-width: 850px) {

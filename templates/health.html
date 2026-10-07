@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Health check · Warrigal Park FC{% endblock %}
+
+{% block content %}
+    <section class="content-panel">
+        <p class="eyebrow">APPLICATION STATUS</p>
+        <h1>Service health</h1>
+        <p>
+            <strong>Status:</strong> {{ status }}
+        </p>
+        <p>
+            <strong>Database:</strong> {{ database_uri }}
+        </p>
+        <div class="form-actions">
+            <a class="button" href="{{ url_for('home') }}">Back to overview</a>
+        </div>
+    </section>
+{% endblock %}

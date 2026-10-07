@@ -22,12 +22,34 @@
                 <a href="{{ url_for('new_registration') }}">Registrations</a>
                 <a href="{{ url_for('registration_history') }}">History</a>
                 <a href="{{ url_for('guardian_list') }}">Guardians</a>
+                <a href="{{ url_for('reports') }}">Reports</a>
+                {% if config.get('ADMIN_ENABLED') %}
+                    {% if session.get('is_admin') %}
+                        <form method="POST" action="{{ url_for('logout') }}" class="inline-form inline-form-nav">
+                            <button type="submit" class="button-small nav-signout">Sign out</button>
+                        </form>
+                    {% else %}
+                        <a href="{{ url_for('login') }}">Admin login</a>
+                    {% endif %}
+                {% endif %}
                 <a class="nav-cta" href="{{ url_for('new_team') }}">Create team <span aria-hidden="true">↗</span></a>
             </nav>
         </div>
     </header>
 
     <main class="page-shell">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack" aria-live="polite">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}" role="status">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </main>
 

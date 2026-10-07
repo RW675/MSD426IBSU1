@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Team Rosters · Warrigal Park FC{% endblock %}
+
+{% block content %}
+<section class="section-block">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">TEAM MANAGEMENT</p>
+            <h1>Team Rosters</h1>
+        </div>
+
+        <span class="section-note">
+            WARRIGAL PARK FC
+        </span>
+    </div>
+
+    {% if error %}
+        <p>{{ error }}</p>
+    {% endif %}
+
+    {% if teams %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Team</th>
+                    <th>Season</th>
+                    <th>Age Group</th>
+                    <th>Roster</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for team in teams %}
+                    <tr>
+                        <td>{{ team.name }}</td>
+                        <td>{{ team.season }}</td>
+                        <td>{{ team.age_group }}</td>
+
+                        <td>
+                            <a href="{{ url_for('manage_team_players', team_id=team.id) }}">
+                                View roster
+                            </a>
+                        </td>
+
+                        <td>
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_team', team_id=team.id) }}"
+                                style="display:inline;"
+                                onsubmit="return confirm('Delete this team? This action cannot be undone.');"
+                            >
+                                <button type="submit">
+                                    Delete team
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No teams have been created yet.</p>
+    {% endif %}
+
+    <p>
+        <a href="{{ url_for('new_team') }}">
+            Create a new team
+        </a>
+    </p>
+
+    <p>
+        <a href="{{ url_for('home') }}">
+            Back to club desk
+        </a>
+    </p>
+</section>
+{% endblock %}
